@@ -489,6 +489,124 @@
     color: var(--ink);
   }
 
+  /* --- Pipeline visualization: input -> encode -> model -> decode -> output --- */
+
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .pipe-stage {
+    width: 100%;
+  }
+
+  .pipe-stage-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 14px;
+    text-align: center;
+  }
+
+  .pipe-text {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 18px;
+    font-weight: 500;
+    padding: 16px 22px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    text-align: center;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .pipe-arrow {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 18px 0;
+    text-align: center;
+  }
+
+  .tokens-with-ids {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 6px;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 4px 0;
+  }
+
+  .token-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .token-cell .tok {
+    padding: 5px 8px;
+    font-size: 14px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    border-radius: 4px;
+    display: block;
+    text-align: center;
+    white-space: pre;
+    min-width: 1ch;
+  }
+
+  .token-cell .tok-id {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .model-box {
+    background: linear-gradient(180deg, #1a1d21 0%, #0a0d11 100%);
+    color: #f0ede8;
+    padding: 28px 32px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid #0a0d11;
+  }
+
+  :root[data-theme="dark"] .model-box {
+    background: linear-gradient(180deg, #2c3239 0%, #1b2026 100%);
+    color: #e8e6e2;
+    border: 1px solid #3a434d;
+  }
+
+  .model-box-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    margin-bottom: 10px;
+  }
+
+  .model-box-body {
+    font-size: 15px;
+    line-height: 1.55;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .model-box-footnote {
+    display: block;
+    margin-top: 10px;
+    font-size: 13px;
+    opacity: 0.65;
+    font-style: italic;
+  }
+
   @media (max-width: 640px) {
     .page { padding: 40px 20px 64px; }
     h1 { font-size: 30px; }
@@ -500,6 +618,10 @@
     .chapter h2 { font-size: 26px; }
     .token-demo { padding: 20px; }
     .tokens { font-size: 16px; }
+    .pipe-text { font-size: 15px; padding: 14px 16px; }
+    .model-box { padding: 22px 20px; }
+    .token-cell .tok { font-size: 12px; padding: 4px 6px; }
+    .token-cell .tok-id { font-size: 9px; }
   }
 </style>
 </head>
@@ -567,25 +689,80 @@
     <div class="eyebrow">How AI Works · Chapter 2</div>
     <h2>Wait, what is a token?</h2>
     <p class="lede">
-      We've been throwing the word "tokens" around. Time to stop. Before a model can read any text, the text gets chopped into small pieces called tokens — and they're often smaller than whole words. Here's the sentence from Chapter 1, split into the tokens GPT-4 would actually see.
+      We've been throwing the word "tokens" around. Time to stop. Before a model can read any text, that text gets chopped into small pieces called <em>tokens</em>, and every token becomes a number. Everything the model actually does, it does on numbers. Here's the round-trip for a simple legal question.
     </p>
 
     <div class="token-demo">
-      <div class="token-demo-label">Tokenized by GPT-4</div>
-      <div class="tokens"><span class="tok c1">The</span><span class="tok c2"> fastest</span><span class="tok c3"> way</span><span class="tok c4"> to</span><span class="tok c5"> win</span><span class="tok c6"> in</span><span class="tok c1"> court</span><span class="tok c2"> is</span><span class="tok c3"> to</span></div>
-      <div class="token-meta">
-        <span>9 tokens</span>
-        <span>37 characters · ~4.1 chars/token</span>
+      <div class="pipeline">
+
+        <div class="pipe-stage">
+          <div class="pipe-stage-label">Your message</div>
+          <div class="pipe-text">"What is jurisprudence?"</div>
+        </div>
+
+        <div class="pipe-arrow">↓ tokenize + encode</div>
+
+        <div class="pipe-stage">
+          <div class="pipe-stage-label">6 tokens · each is really a number</div>
+          <div class="tokens-with-ids">
+            <div class="token-cell"><span class="tok c1">What</span><span class="tok-id">3923</span></div>
+            <div class="token-cell"><span class="tok c2"><span class="space-dot">·</span>is</span><span class="tok-id">374</span></div>
+            <div class="token-cell"><span class="tok c3"><span class="space-dot">·</span>juris</span><span class="tok-id">46995</span></div>
+            <div class="token-cell"><span class="tok c4">pr</span><span class="tok-id">652</span></div>
+            <div class="token-cell"><span class="tok c5">udence</span><span class="tok-id">74193</span></div>
+            <div class="token-cell"><span class="tok c6">?</span><span class="tok-id">30</span></div>
+          </div>
+        </div>
+
+        <div class="pipe-arrow">↓ numbers go in</div>
+
+        <div class="pipe-stage">
+          <div class="model-box">
+            <div class="model-box-label">Neural network</div>
+            <div class="model-box-body">
+              Billions of parameters crunch the input numbers and emit a sequence of output numbers that (hopefully) make sense as a reply.
+              <span class="model-box-footnote">We'll unpack what's in this box in a later chapter.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pipe-arrow">↓ numbers come back out</div>
+
+        <div class="pipe-stage">
+          <div class="pipe-stage-label">12 tokens · each was a number</div>
+          <div class="tokens-with-ids">
+            <div class="token-cell"><span class="tok c1">Jur</span><span class="tok-id">94277</span></div>
+            <div class="token-cell"><span class="tok c2">is</span><span class="tok-id">285</span></div>
+            <div class="token-cell"><span class="tok c3">pr</span><span class="tok-id">652</span></div>
+            <div class="token-cell"><span class="tok c4">udence</span><span class="tok-id">74193</span></div>
+            <div class="token-cell"><span class="tok c5"><span class="space-dot">·</span>is</span><span class="tok-id">374</span></div>
+            <div class="token-cell"><span class="tok c6"><span class="space-dot">·</span>the</span><span class="tok-id">279</span></div>
+            <div class="token-cell"><span class="tok c1"><span class="space-dot">·</span>theory</span><span class="tok-id">10334</span></div>
+            <div class="token-cell"><span class="tok c2"><span class="space-dot">·</span>and</span><span class="tok-id">323</span></div>
+            <div class="token-cell"><span class="tok c3"><span class="space-dot">·</span>philosophy</span><span class="tok-id">19675</span></div>
+            <div class="token-cell"><span class="tok c4"><span class="space-dot">·</span>of</span><span class="tok-id">315</span></div>
+            <div class="token-cell"><span class="tok c5"><span class="space-dot">·</span>law</span><span class="tok-id">2383</span></div>
+            <div class="token-cell"><span class="tok c6">.</span><span class="tok-id">13</span></div>
+          </div>
+        </div>
+
+        <div class="pipe-arrow">↓ decode + stitch</div>
+
+        <div class="pipe-stage">
+          <div class="pipe-stage-label">Model's answer</div>
+          <div class="pipe-text">"Jurisprudence is the theory and philosophy of law."</div>
+        </div>
+
       </div>
     </div>
 
     <div class="annotations">
       <p>A few things worth noticing:</p>
       <ul>
-        <li><strong>Every word here is one token, but that's a coincidence.</strong> This sentence is all common English. If we swapped in a rarer word like "jurisprudence" or "habeas," you'd see it split across multiple tokens.</li>
-        <li><strong>Spaces attach to the <em>following</em> token, not the previous one.</strong> That's why "<code> fastest</code>" includes a leading space — there's no separate "space" token between "The" and "fastest."</li>
-        <li><strong>Identical tokens share an identical ID.</strong> The two "<code> to</code>" tokens in this sentence are both token number <code>311</code> in GPT-4's vocabulary. A token is really just a number; the word is how we display it.</li>
-        <li><strong>Every model family tokenizes differently.</strong> Claude, LLaMA, and GPT-4 each use their own vocabularies, so this exact sentence would break into different pieces depending on which model you asked.</li>
+        <li><strong>"Jurisprudence" splits — twice, differently.</strong> In the input (lowercase, with a leading space) it becomes three tokens: <code>·juris</code>, <code>pr</code>, <code>udence</code>. In the output (capital J, no leading space, sentence-start) it becomes <em>four</em>: <code>Jur</code>, <code>is</code>, <code>pr</code>, <code>udence</code>. Capitalization and position change the split.</li>
+        <li><strong>Tokens reuse numeric IDs across contexts.</strong> <code>pr</code> is token <code>652</code> both times it appears. <code>udence</code> is <code>74193</code>. <code>·is</code> (with leading space) is <code>374</code>. The vocabulary is fixed once during training — same word-pieces, same numbers, wherever they show up.</li>
+        <li><strong>The model never actually sees English.</strong> Only numbers. Whatever it "knows" about grammar, meaning, or legal theory is computed from operations on these token IDs.</li>
+        <li><strong>Callback to Chapter 1:</strong> the probability distribution on the bar chart? That's over all ~100,000 of these numbers. The model doesn't pick the next <em>word</em> — it picks the next <em>number</em>, and we decode it on the way back out.</li>
       </ul>
     </div>
   </section>
