@@ -25,6 +25,12 @@
     --highlight-start: #b98a2e;
     --highlight-end: #d4a857;
     --panel-shadow: 0 1px 2px rgba(0, 0, 0, 0.02), 0 8px 24px rgba(20, 40, 60, 0.04);
+    --tok-1: #dceaf4;
+    --tok-2: #f3e4cf;
+    --tok-3: #def0e0;
+    --tok-4: #f4dcde;
+    --tok-5: #e6dff0;
+    --tok-6: #dceeea;
   }
 
   :root[data-theme="dark"] {
@@ -44,6 +50,12 @@
     --highlight-start: #c89840;
     --highlight-end: #e8c070;
     --panel-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.25);
+    --tok-1: #1f3b4f;
+    --tok-2: #433420;
+    --tok-3: #253a2a;
+    --tok-4: #3f2828;
+    --tok-5: #2e284a;
+    --tok-6: #1b3b3a;
   }
 
   * { box-sizing: border-box; }
@@ -367,6 +379,116 @@
     line-height: 1.5;
   }
 
+  .chapter {
+    margin-top: 88px;
+    padding-top: 56px;
+    border-top: 1px solid var(--line);
+  }
+
+  .chapter h2 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin: 0 0 16px;
+  }
+
+  .chapter .lede {
+    margin-bottom: 36px;
+  }
+
+  .token-demo {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 32px;
+    box-shadow: var(--panel-shadow);
+    transition: background-color 200ms ease, border-color 200ms ease;
+  }
+
+  .token-demo-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 16px;
+  }
+
+  .tokens {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 19px;
+    line-height: 2.1;
+    overflow-wrap: anywhere;
+  }
+
+  .tok {
+    padding: 3px 1px;
+    border-radius: 3px;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    color: var(--ink);
+    transition: background-color 200ms ease;
+  }
+
+  .tok.c1 { background: var(--tok-1); }
+  .tok.c2 { background: var(--tok-2); }
+  .tok.c3 { background: var(--tok-3); }
+  .tok.c4 { background: var(--tok-4); }
+  .tok.c5 { background: var(--tok-5); }
+  .tok.c6 { background: var(--tok-6); }
+
+  .token-meta {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .annotations {
+    margin-top: 36px;
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.65;
+  }
+
+  .annotations p {
+    margin: 0 0 14px;
+  }
+
+  .annotations ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  .annotations li {
+    margin-bottom: 12px;
+  }
+
+  .annotations li:last-child {
+    margin-bottom: 0;
+  }
+
+  .annotations strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .annotations code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px;
+    padding: 1px 5px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    color: var(--ink);
+  }
+
   @media (max-width: 640px) {
     .page { padding: 40px 20px 64px; }
     h1 { font-size: 30px; }
@@ -374,6 +496,10 @@
     .prompt { font-size: 16px; padding: 14px 16px; }
     .bar-row { grid-template-columns: 96px 1fr 52px; gap: 10px; }
     .bar-token { font-size: 12px; }
+    .chapter { margin-top: 64px; padding-top: 40px; }
+    .chapter h2 { font-size: 26px; }
+    .token-demo { padding: 20px; }
+    .tokens { font-size: 16px; }
   }
 </style>
 </head>
@@ -434,8 +560,35 @@
   </section>
 
   <p class="footnote">
-    Probabilities shown are illustrative — hand-picked logits designed to resemble what a real LLM might predict for this sentence. The next chapter will plug in an actual model so you can type your own prompts.
+    Probabilities shown are illustrative — hand-picked logits designed to resemble what a real LLM might predict for this sentence. The math the slider runs is real; the numbers it runs on are curated.
   </p>
+
+  <section class="chapter" id="chapter-2">
+    <div class="eyebrow">How AI Works · Chapter 2</div>
+    <h2>Wait, what is a token?</h2>
+    <p class="lede">
+      We've been throwing the word "tokens" around. Time to stop. Before a model can read any text, the text gets chopped into small pieces called tokens — and they're often smaller than whole words. Here's the sentence from Chapter 1, split into the tokens GPT-4 would actually see.
+    </p>
+
+    <div class="token-demo">
+      <div class="token-demo-label">Tokenized by GPT-4</div>
+      <div class="tokens"><span class="tok c1">The</span><span class="tok c2"> fastest</span><span class="tok c3"> way</span><span class="tok c4"> to</span><span class="tok c5"> win</span><span class="tok c6"> in</span><span class="tok c1"> court</span><span class="tok c2"> is</span><span class="tok c3"> to</span></div>
+      <div class="token-meta">
+        <span>9 tokens</span>
+        <span>37 characters · ~4.1 chars/token</span>
+      </div>
+    </div>
+
+    <div class="annotations">
+      <p>A few things worth noticing:</p>
+      <ul>
+        <li><strong>Every word here is one token, but that's a coincidence.</strong> This sentence is all common English. If we swapped in a rarer word like "jurisprudence" or "habeas," you'd see it split across multiple tokens.</li>
+        <li><strong>Spaces attach to the <em>following</em> token, not the previous one.</strong> That's why "<code> fastest</code>" includes a leading space — there's no separate "space" token between "The" and "fastest."</li>
+        <li><strong>Identical tokens share an identical ID.</strong> The two "<code> to</code>" tokens in this sentence are both token number <code>311</code> in GPT-4's vocabulary. A token is really just a number; the word is how we display it.</li>
+        <li><strong>Every model family tokenizes differently.</strong> Claude, LLaMA, and GPT-4 each use their own vocabularies, so this exact sentence would break into different pieces depending on which model you asked.</li>
+      </ul>
+    </div>
+  </section>
 </div>
 
 <script>
