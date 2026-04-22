@@ -31,6 +31,13 @@
     --tok-4: #f4dcde;
     --tok-5: #e6dff0;
     --tok-6: #dceeea;
+    --cat-legal:     #2c5a7a;
+    --cat-colors:    #c4656a;
+    --cat-animals:   #b88a3e;
+    --cat-numbers:   #3a8a8a;
+    --cat-countries: #7a5ba8;
+    --cat-time:      #5a8a5a;
+    --cat-emotions:  #b85f8c;
   }
 
   :root[data-theme="dark"] {
@@ -56,6 +63,13 @@
     --tok-4: #3f2828;
     --tok-5: #2e284a;
     --tok-6: #1b3b3a;
+    --cat-legal:     #7ab8d6;
+    --cat-colors:    #e08a8e;
+    --cat-animals:   #e0b06a;
+    --cat-numbers:   #6abcbc;
+    --cat-countries: #b59cd8;
+    --cat-time:      #8ebb8e;
+    --cat-emotions:  #e090b8;
   }
 
   * { box-sizing: border-box; }
@@ -607,6 +621,165 @@
     font-style: italic;
   }
 
+  /* --- Chapter 3: Embeddings scatter plot --- */
+
+  .embedding-demo {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 32px;
+    box-shadow: var(--panel-shadow);
+    transition: background-color 200ms ease, border-color 200ms ease;
+  }
+
+  .embedding-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .embedding-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding-top: 3px;
+  }
+
+  .embedding-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    max-width: 560px;
+    justify-content: flex-end;
+  }
+
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: default;
+    transition: color 150ms ease;
+  }
+
+  .legend-item:hover {
+    color: var(--ink);
+  }
+
+  .legend-swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--legend-color, var(--ink-faint));
+    flex-shrink: 0;
+  }
+
+  .legend-item[data-cat="legal"]     { --legend-color: var(--cat-legal); }
+  .legend-item[data-cat="colors"]    { --legend-color: var(--cat-colors); }
+  .legend-item[data-cat="animals"]   { --legend-color: var(--cat-animals); }
+  .legend-item[data-cat="numbers"]   { --legend-color: var(--cat-numbers); }
+  .legend-item[data-cat="countries"] { --legend-color: var(--cat-countries); }
+  .legend-item[data-cat="time"]      { --legend-color: var(--cat-time); }
+  .legend-item[data-cat="emotions"]  { --legend-color: var(--cat-emotions); }
+
+  .embedding-viz-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 11;
+    position: relative;
+    background: var(--bg-subtle);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .embedding-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  .embedding-axis {
+    stroke: var(--line);
+    stroke-width: 0.015;
+    stroke-dasharray: 0.06 0.06;
+  }
+
+  .point {
+    opacity: 0;
+    animation: point-fade-in 480ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: var(--delay, 0ms);
+    cursor: default;
+    transition: opacity 180ms ease;
+  }
+
+  @keyframes point-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .point[data-cat="legal"]     { color: var(--cat-legal); }
+  .point[data-cat="colors"]    { color: var(--cat-colors); }
+  .point[data-cat="animals"]   { color: var(--cat-animals); }
+  .point[data-cat="numbers"]   { color: var(--cat-numbers); }
+  .point[data-cat="countries"] { color: var(--cat-countries); }
+  .point[data-cat="time"]      { color: var(--cat-time); }
+  .point[data-cat="emotions"]  { color: var(--cat-emotions); }
+
+  .point circle {
+    fill: currentColor;
+    transition: r 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .point text {
+    font-size: 11px;
+    fill: var(--ink);
+    pointer-events: none;
+    dominant-baseline: middle;
+    transition: font-weight 180ms ease, fill 180ms ease;
+  }
+
+  /* Hover: dim other points, emphasize the hovered one */
+  .embedding-svg:hover .point {
+    opacity: 0.22;
+  }
+
+  .embedding-svg .point:hover {
+    opacity: 1;
+  }
+
+  .point:hover circle {
+    r: 0.16;
+  }
+
+  .point:hover text {
+    font-weight: 700;
+    fill: currentColor;
+  }
+
+  /* Legend hover: filter by category */
+  .embedding-demo[data-focus="legal"]     .point:not([data-cat="legal"]),
+  .embedding-demo[data-focus="colors"]    .point:not([data-cat="colors"]),
+  .embedding-demo[data-focus="animals"]   .point:not([data-cat="animals"]),
+  .embedding-demo[data-focus="numbers"]   .point:not([data-cat="numbers"]),
+  .embedding-demo[data-focus="countries"] .point:not([data-cat="countries"]),
+  .embedding-demo[data-focus="time"]      .point:not([data-cat="time"]),
+  .embedding-demo[data-focus="emotions"]  .point:not([data-cat="emotions"]) {
+    opacity: 0.15;
+  }
+
+  .embedding-caption {
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--ink-faint);
+    line-height: 1.55;
+  }
+
   @media (max-width: 640px) {
     .page { padding: 40px 20px 64px; }
     h1 { font-size: 30px; }
@@ -622,6 +795,11 @@
     .model-box { padding: 22px 20px; }
     .token-cell .tok { font-size: 12px; padding: 4px 6px; }
     .token-cell .tok-id { font-size: 9px; }
+    .embedding-demo { padding: 20px; }
+    .embedding-header { flex-direction: column; }
+    .embedding-legend { justify-content: flex-start; gap: 8px 12px; font-size: 11px; }
+    .embedding-viz-wrap { aspect-ratio: 4 / 5; }
+    .point text { font-size: 10px; }
   }
 </style>
 </head>
@@ -766,6 +944,37 @@
       </ul>
     </div>
   </section>
+
+  <section class="chapter" id="chapter-3">
+    <div class="eyebrow">How AI Works · Chapter 3</div>
+    <h2>Meaning lives in space</h2>
+    <p class="lede">
+      Once text is tokens and tokens are numbers, the model's next move is to turn each number into a <em>vector</em> — a long list of numbers that plants the token somewhere in a high-dimensional space. The beautiful part: the model learns these positions so that words with similar meanings end up close together. Below, 42 real English words embedded by GloVe into 50 dimensions, projected down to 2 so you can actually see them.
+    </p>
+
+    <div class="embedding-demo" id="embedding-demo">
+      <div class="embedding-header">
+        <div class="embedding-title">42 words in vector space · PCA to 2D</div>
+        <div class="embedding-legend" id="embedding-legend"></div>
+      </div>
+      <div class="embedding-viz-wrap">
+        <svg class="embedding-svg" id="embedding-svg" viewBox="-3.6 -3.6 7.2 7.2" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <div class="embedding-caption">
+        Each dot is a word. Position shows where GloVe placed it in 50-dimensional meaning-space, squashed down to 2 via PCA for display. Hover any word to focus; hover a category label to filter.
+      </div>
+    </div>
+
+    <div class="annotations">
+      <p>A few things worth noticing:</p>
+      <ul>
+        <li><strong>Categories form visible clusters.</strong> Colors group together. Animals group together. Countries group together. Legal terms group together. Nothing in the training told GloVe these were "colors" or "animals" — it just read billions of words of text and learned that words appearing in similar contexts should have similar vectors. Meaning fell out of the math.</li>
+        <li><strong>You're looking at a shadow.</strong> The real embedding is 50 directions at once. PCA projects that down to 2, which loses most of the information (the 2D plot keeps only <strong>~34%</strong> of the original variance). Words that look close in this picture <em>might</em> be close in the real space, but not always. We'll add a "true nearest-neighbor" view next.</li>
+        <li><strong>The axes don't mean anything.</strong> Unlike a normal chart, "up" and "right" aren't defined concepts. PCA just picks the two directions where the words spread out the most. A different word list would produce different axes.</li>
+        <li><strong>This is what the "meaning" layer of the model <em>is</em>.</strong> Every operation downstream — attention, prediction, the whole transformer — runs on vectors like these. Understand this picture and you have the shape of everything the model does with meaning.</li>
+      </ul>
+    </div>
+  </section>
 </div>
 
 <script>
@@ -881,6 +1090,119 @@
 
   tempSlider.addEventListener('input', update);
   update();
+
+  // --- Chapter 3: Embeddings scatter plot ---
+  // Real GloVe 50-dim embeddings for a curated 42-word vocabulary, projected to
+  // 2D via PCA. Generated offline by scripts/build_embeddings.py.
+
+  const EMBEDDING_DATA = [
+    {"word":"law","cat":"legal","x":-2.4744,"y":-1.7616},
+    {"word":"court","cat":"legal","x":-3.0271,"y":-1.8682},
+    {"word":"judge","cat":"legal","x":-2.7195,"y":-3.2403},
+    {"word":"contract","cat":"legal","x":-1.2561,"y":0.9382},
+    {"word":"lawyer","cat":"legal","x":-2.3388,"y":-2.986},
+    {"word":"trial","cat":"legal","x":-2.7862,"y":-1.7052},
+    {"word":"justice","cat":"legal","x":-2.5824,"y":-2.3778},
+    {"word":"evidence","cat":"legal","x":-1.348,"y":-1.4727},
+    {"word":"red","cat":"colors","x":2.4707,"y":-0.0193},
+    {"word":"blue","cat":"colors","x":2.7065,"y":-0.3501},
+    {"word":"green","cat":"colors","x":2.3468,"y":-0.6548},
+    {"word":"yellow","cat":"colors","x":3.063,"y":-0.0821},
+    {"word":"black","cat":"colors","x":2.0293,"y":-1.0489},
+    {"word":"white","cat":"colors","x":1.603,"y":-1.4236},
+    {"word":"dog","cat":"animals","x":2.6444,"y":-1.4237},
+    {"word":"cat","cat":"animals","x":2.6585,"y":-1.0423},
+    {"word":"horse","cat":"animals","x":2.3766,"y":-0.2763},
+    {"word":"bird","cat":"animals","x":2.0249,"y":0.1779},
+    {"word":"fish","cat":"animals","x":2.6007,"y":-0.0727},
+    {"word":"cow","cat":"animals","x":2.0086,"y":0.1621},
+    {"word":"tiger","cat":"animals","x":1.8474,"y":0.4751},
+    {"word":"one","cat":"numbers","x":-0.089,"y":0.0129},
+    {"word":"two","cat":"numbers","x":-0.3974,"y":1.0589},
+    {"word":"three","cat":"numbers","x":-0.3982,"y":1.2155},
+    {"word":"four","cat":"numbers","x":-0.3006,"y":1.3407},
+    {"word":"ten","cat":"numbers","x":0.0841,"y":1.1184},
+    {"word":"france","cat":"countries","x":-1.3966,"y":1.4848},
+    {"word":"japan","cat":"countries","x":-0.8654,"y":3.1743},
+    {"word":"brazil","cat":"countries","x":-0.85,"y":1.9819},
+    {"word":"germany","cat":"countries","x":-1.7053,"y":2.3811},
+    {"word":"china","cat":"countries","x":-1.042,"y":2.9081},
+    {"word":"india","cat":"countries","x":-1.2209,"y":2.1102},
+    {"word":"day","cat":"time","x":-0.3549,"y":0.7258},
+    {"word":"week","cat":"time","x":-1.4247,"y":0.9788},
+    {"word":"month","cat":"time","x":-1.6087,"y":1.3255},
+    {"word":"year","cat":"time","x":-1.0796,"y":1.8182},
+    {"word":"hour","cat":"time","x":-0.4775,"y":0.4815},
+    {"word":"happy","cat":"emotions","x":0.6975,"y":-0.4613},
+    {"word":"sad","cat":"emotions","x":0.1374,"y":-1.078},
+    {"word":"angry","cat":"emotions","x":-0.0381,"y":-1.1144},
+    {"word":"love","cat":"emotions","x":0.8856,"y":-0.9881},
+    {"word":"fear","cat":"emotions","x":-0.4035,"y":-0.4226},
+  ];
+
+  const CATEGORIES = [
+    ['legal', 'Legal'],
+    ['countries', 'Countries'],
+    ['time', 'Time'],
+    ['numbers', 'Numbers'],
+    ['emotions', 'Emotions'],
+    ['colors', 'Colors'],
+    ['animals', 'Animals'],
+  ];
+
+  (function renderEmbeddingViz() {
+    const svg = document.getElementById('embedding-svg');
+    if (!svg) return;
+    const NS = 'http://www.w3.org/2000/svg';
+
+    // Subtle axes through origin, to orient the eye.
+    for (const [x1, y1, x2, y2] of [[0, -3.6, 0, 3.6], [-3.6, 0, 3.6, 0]]) {
+      const line = document.createElementNS(NS, 'line');
+      line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+      line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+      line.setAttribute('class', 'embedding-axis');
+      svg.appendChild(line);
+    }
+
+    // Sort so tokens don't overlap label-text too much at random; render in
+    // reading order so later hovers stack above earlier ones.
+    EMBEDDING_DATA.forEach((d, i) => {
+      const g = document.createElementNS(NS, 'g');
+      g.setAttribute('class', 'point');
+      g.setAttribute('data-cat', d.cat);
+      g.setAttribute('data-word', d.word);
+      g.style.setProperty('--delay', (300 + i * 22) + 'ms');
+
+      const c = document.createElementNS(NS, 'circle');
+      c.setAttribute('cx', d.x);
+      c.setAttribute('cy', -d.y); // flip: positive y is "up" visually
+      c.setAttribute('r', '0.1');
+      g.appendChild(c);
+
+      const t = document.createElementNS(NS, 'text');
+      t.setAttribute('x', d.x + 0.16);
+      t.setAttribute('y', -d.y);
+      t.textContent = d.word;
+      g.appendChild(t);
+
+      svg.appendChild(g);
+    });
+  })();
+
+  (function renderEmbeddingLegend() {
+    const legend = document.getElementById('embedding-legend');
+    const demo = document.getElementById('embedding-demo');
+    if (!legend || !demo) return;
+
+    legend.innerHTML = CATEGORIES.map(([id, label]) =>
+      `<span class="legend-item" data-cat="${id}"><span class="legend-swatch"></span><span>${label}</span></span>`
+    ).join('');
+
+    legend.querySelectorAll('.legend-item').forEach((item) => {
+      item.addEventListener('mouseenter', () => demo.setAttribute('data-focus', item.dataset.cat));
+      item.addEventListener('mouseleave', () => demo.removeAttribute('data-focus'));
+    });
+  })();
 </script>
 </body>
 </html>

@@ -1,0 +1,254 @@
+[
+  {
+    "word": "law",
+    "cat": "legal",
+    "x": -2.4744,
+    "y": -1.7616
+  },
+  {
+    "word": "court",
+    "cat": "legal",
+    "x": -3.0271,
+    "y": -1.8682
+  },
+  {
+    "word": "judge",
+    "cat": "legal",
+    "x": -2.7195,
+    "y": -3.2403
+  },
+  {
+    "word": "contract",
+    "cat": "legal",
+    "x": -1.2561,
+    "y": 0.9382
+  },
+  {
+    "word": "lawyer",
+    "cat": "legal",
+    "x": -2.3388,
+    "y": -2.986
+  },
+  {
+    "word": "trial",
+    "cat": "legal",
+    "x": -2.7862,
+    "y": -1.7052
+  },
+  {
+    "word": "justice",
+    "cat": "legal",
+    "x": -2.5824,
+    "y": -2.3778
+  },
+  {
+    "word": "evidence",
+    "cat": "legal",
+    "x": -1.348,
+    "y": -1.4727
+  },
+  {
+    "word": "red",
+    "cat": "colors",
+    "x": 2.4707,
+    "y": -0.0193
+  },
+  {
+    "word": "blue",
+    "cat": "colors",
+    "x": 2.7065,
+    "y": -0.3501
+  },
+  {
+    "word": "green",
+    "cat": "colors",
+    "x": 2.3468,
+    "y": -0.6548
+  },
+  {
+    "word": "yellow",
+    "cat": "colors",
+    "x": 3.063,
+    "y": -0.0821
+  },
+  {
+    "word": "black",
+    "cat": "colors",
+    "x": 2.0293,
+    "y": -1.0489
+  },
+  {
+    "word": "white",
+    "cat": "colors",
+    "x": 1.603,
+    "y": -1.4236
+  },
+  {
+    "word": "dog",
+    "cat": "animals",
+    "x": 2.6444,
+    "y": -1.4237
+  },
+  {
+    "word": "cat",
+    "cat": "animals",
+    "x": 2.6585,
+    "y": -1.0423
+  },
+  {
+    "word": "horse",
+    "cat": "animals",
+    "x": 2.3766,
+    "y": -0.2763
+  },
+  {
+    "word": "bird",
+    "cat": "animals",
+    "x": 2.0249,
+    "y": 0.1779
+  },
+  {
+    "word": "fish",
+    "cat": "animals",
+    "x": 2.6007,
+    "y": -0.0727
+  },
+  {
+    "word": "cow",
+    "cat": "animals",
+    "x": 2.0086,
+    "y": 0.1621
+  },
+  {
+    "word": "tiger",
+    "cat": "animals",
+    "x": 1.8474,
+    "y": 0.4751
+  },
+  {
+    "word": "one",
+    "cat": "numbers",
+    "x": -0.089,
+    "y": 0.0129
+  },
+  {
+    "word": "two",
+    "cat": "numbers",
+    "x": -0.3974,
+    "y": 1.0589
+  },
+  {
+    "word": "three",
+    "cat": "numbers",
+    "x": -0.3982,
+    "y": 1.2155
+  },
+  {
+    "word": "four",
+    "cat": "numbers",
+    "x": -0.3006,
+    "y": 1.3407
+  },
+  {
+    "word": "ten",
+    "cat": "numbers",
+    "x": 0.0841,
+    "y": 1.1184
+  },
+  {
+    "word": "france",
+    "cat": "countries",
+    "x": -1.3966,
+    "y": 1.4848
+  },
+  {
+    "word": "japan",
+    "cat": "countries",
+    "x": -0.8654,
+    "y": 3.1743
+  },
+  {
+    "word": "brazil",
+    "cat": "countries",
+    "x": -0.85,
+    "y": 1.9819
+  },
+  {
+    "word": "germany",
+    "cat": "countries",
+    "x": -1.7053,
+    "y": 2.3811
+  },
+  {
+    "word": "china",
+    "cat": "countries",
+    "x": -1.042,
+    "y": 2.9081
+  },
+  {
+    "word": "india",
+    "cat": "countries",
+    "x": -1.2209,
+    "y": 2.1102
+  },
+  {
+    "word": "day",
+    "cat": "time",
+    "x": -0.3549,
+    "y": 0.7258
+  },
+  {
+    "word": "week",
+    "cat": "time",
+    "x": -1.4247,
+    "y": 0.9788
+  },
+  {
+    "word": "month",
+    "cat": "time",
+    "x": -1.6087,
+    "y": 1.3255
+  },
+  {
+    "word": "year",
+    "cat": "time",
+    "x": -1.0796,
+    "y": 1.8182
+  },
+  {
+    "word": "hour",
+    "cat": "time",
+    "x": -0.4775,
+    "y": 0.4815
+  },
+  {
+    "word": "happy",
+    "cat": "emotions",
+    "x": 0.6975,
+    "y": -0.4613
+  },
+  {
+    "word": "sad",
+    "cat": "emotions",
+    "x": 0.1374,
+    "y": -1.078
+  },
+  {
+    "word": "angry",
+    "cat": "emotions",
+    "x": -0.0381,
+    "y": -1.1144
+  },
+  {
+    "word": "love",
+    "cat": "emotions",
+    "x": 0.8856,
+    "y": -0.9881
+  },
+  {
+    "word": "fear",
+    "cat": "emotions",
+    "x": -0.4035,
+    "y": -0.4226
+  }
+]
