@@ -738,6 +738,10 @@
 
   .point text {
     fill: var(--ink);
+    paint-order: stroke fill;
+    stroke: var(--bg-subtle);
+    stroke-width: 0.07;
+    stroke-linejoin: round;
     pointer-events: none;
     dominant-baseline: middle;
     transition: font-weight 180ms ease, fill 180ms ease;
