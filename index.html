@@ -737,7 +737,6 @@
   }
 
   .point text {
-    font-size: 11px;
     fill: var(--ink);
     pointer-events: none;
     dominant-baseline: middle;
@@ -799,7 +798,7 @@
     .embedding-header { flex-direction: column; }
     .embedding-legend { justify-content: flex-start; gap: 8px 12px; font-size: 11px; }
     .embedding-viz-wrap { aspect-ratio: 4 / 5; }
-    .point text { font-size: 10px; }
+    /* Text on mobile uses the same user-unit font-size set via SVG attribute. */
   }
 </style>
 </head>
@@ -1180,8 +1179,9 @@
       g.appendChild(c);
 
       const t = document.createElementNS(NS, 'text');
-      t.setAttribute('x', d.x + 0.16);
+      t.setAttribute('x', d.x + 0.14);
       t.setAttribute('y', -d.y);
+      t.setAttribute('font-size', '0.17');
       t.textContent = d.word;
       g.appendChild(t);
 
