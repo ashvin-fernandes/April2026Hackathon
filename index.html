@@ -262,7 +262,8 @@
     min-width: 2px;
   }
 
-  .bar-row.top .bar-fill {
+  .bar-row.top .bar-fill,
+  .bar-row.picked .bar-fill {
     background: linear-gradient(90deg, var(--highlight-start), var(--highlight-end));
   }
 
@@ -274,7 +275,8 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .bar-row.top .bar-pct {
+  .bar-row.top .bar-pct,
+  .bar-row.picked .bar-pct {
     color: var(--ink);
     font-weight: 600;
   }
@@ -794,6 +796,155 @@
     line-height: 1.55;
   }
 
+  /* --- Chapter 1 autoregressive demo --- */
+
+  .chapter-subsection {
+    margin-top: 64px;
+    padding-top: 48px;
+    border-top: 1px dashed var(--line);
+  }
+
+  .chapter-subsection h3 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    margin: 0 0 14px;
+  }
+
+  .ar-prompt-display {
+    margin-bottom: 28px;
+  }
+
+  .ar-text {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 17px;
+    line-height: 1.85;
+    padding: 18px 22px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    min-height: 64px;
+    word-wrap: break-word;
+    transition: background-color 200ms ease, border-color 200ms ease;
+  }
+
+  .ar-prompt-static {
+    color: var(--ink-soft);
+  }
+
+  #ar-generated .tok {
+    display: inline;
+    padding: 3px 2px;
+    border-radius: 3px;
+    animation: ar-token-appear 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  @keyframes ar-token-appear {
+    from { opacity: 0; transform: translateY(-3px); filter: blur(1px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+
+  .ar-note {
+    margin-top: 16px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    background: var(--bg-subtle);
+    border-left: 3px solid var(--accent-soft);
+    border-radius: 0 6px 6px 0;
+    line-height: 1.55;
+    min-height: 42px;
+    transition: background-color 200ms ease, border-color 200ms ease;
+  }
+
+  .ar-note.note-sampling {
+    border-left-color: var(--highlight-end);
+  }
+
+  .ar-note strong {
+    color: var(--ink);
+  }
+
+  .ar-note code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    padding: 1px 5px;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    color: var(--ink);
+  }
+
+  .ar-done {
+    padding: 24px 18px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 14px;
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+  }
+
+  .ar-controls {
+    margin-top: 22px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .ar-btn {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 9px 18px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: var(--bg-panel);
+    color: var(--ink);
+    cursor: pointer;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 100ms ease;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ar-btn:hover {
+    border-color: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .ar-btn:active {
+    transform: scale(0.97);
+  }
+
+  .ar-btn-primary {
+    background: var(--accent);
+    color: var(--bg-panel);
+    border-color: var(--accent);
+  }
+
+  .ar-btn-primary:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent-soft);
+    color: var(--bg-panel);
+  }
+
+  .ar-btn-ghost {
+    background: transparent;
+  }
+
+  .ar-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .ar-btn:disabled:hover {
+    border-color: var(--line);
+    color: var(--ink);
+  }
+
   @media (max-width: 640px) {
     .page { padding: 40px 20px 64px; }
     h1 { font-size: 30px; }
@@ -814,6 +965,10 @@
     .embedding-legend { justify-content: flex-start; gap: 8px 12px; font-size: 11px; }
     .embedding-viz-wrap { aspect-ratio: 4 / 5; }
     /* Text on mobile uses the same user-unit font-size set via SVG attribute. */
+    .chapter-subsection { margin-top: 48px; padding-top: 32px; }
+    .chapter-subsection h3 { font-size: 22px; }
+    .ar-text { font-size: 15px; padding: 14px 16px; }
+    .ar-btn { padding: 8px 14px; font-size: 13px; }
   }
 </style>
 </head>
@@ -876,6 +1031,40 @@
   <p class="footnote">
     Probabilities shown are illustrative — hand-picked logits designed to resemble what a real LLM might predict for this sentence. The math the slider runs is real; the numbers it runs on are curated.
   </p>
+
+  <section class="chapter-subsection" id="chapter-1b">
+    <h3>Now watch it happen, one token at a time</h3>
+    <p class="lede">
+      The bar chart above shows <em>one</em> step. To actually generate, the model picks a token, appends it to what it has seen, and runs the whole thing through again for the next token. And again. And again. Here's that loop, visible.
+    </p>
+
+    <div class="demo">
+      <div class="ar-prompt-display">
+        <div class="prompt-label">Generated so far</div>
+        <div class="ar-text"><span class="ar-prompt-static">The first rule of trial practice is</span><span id="ar-generated"></span><span class="caret"></span></div>
+      </div>
+
+      <div class="chart-header">
+        <div class="chart-title">Next token · step <span id="ar-step-num">1</span> of 13</div>
+        <div class="chart-sub">top 10 candidates this step</div>
+      </div>
+
+      <div id="ar-bars" class="bars"></div>
+
+      <div class="ar-note" id="ar-note">Click play. Each step, the model looks at everything it has seen, picks one token, and appends it. The distribution on the bar chart will change completely every step — because the context grows by one word every step.</div>
+
+      <div class="ar-controls">
+        <button id="ar-play" class="ar-btn ar-btn-primary">▶ Play</button>
+        <button id="ar-step" class="ar-btn">Step →</button>
+        <button id="ar-reset" class="ar-btn ar-btn-ghost">↺ Reset</button>
+      </div>
+    </div>
+
+    <div class="annotations">
+      <p>The point: the model isn't <em>thinking</em> about an answer, then <em>writing</em> it. There's no plan, no intent, no "answer in its head" that it's trying to express. At every single step, all it's doing is <strong>predicting the next token given what it has seen so far</strong>. What looks like reasoning or personality is what happens when this loop runs on a model trained on trillions of tokens.</p>
+      <p><strong>An honest caveat:</strong> the word "just" is doing a lot of work in "just text prediction." Some researchers — Ilya Sutskever, for instance — argue that being <em>really good</em> at next-token prediction requires something that looks a lot like understanding, so "just" can undersell the emergent behavior. The <em>mechanism</em> is clearly this loop. Whether that's all there is to it is a real and open debate.</p>
+    </div>
+  </section>
 
   <section class="chapter" id="chapter-2">
     <div class="eyebrow">How AI Works · Chapter 2</div>
@@ -1248,6 +1437,321 @@
       item.addEventListener('mouseenter', () => demo.setAttribute('data-focus', item.dataset.cat));
       item.addEventListener('mouseleave', () => demo.removeAttribute('data-focus'));
     });
+  })();
+
+  // --- Chapter 1 autoregressive demo ---
+  // Pre-scripted generation: for each step, a hand-crafted plausible top-10
+  // distribution and the pre-chosen "picked" token. The picks are mostly
+  // greedy (rank 1) with one intentional non-top pick at step 0 to make the
+  // "sampling isn't deterministic" point visible.
+
+  const AR_STEPS = [
+    { picked: " never",   rank: 2, candidates: [
+      { tok: " to",          p: 0.26 },
+      { tok: " never",       p: 0.17 },
+      { tok: " always",      p: 0.12 },
+      { tok: " that",        p: 0.11 },
+      { tok: " simple",      p: 0.08 },
+      { tok: " be",          p: 0.06 },
+      { tok: " about",       p: 0.05 },
+      { tok: " preparation", p: 0.04 },
+      { tok: ",",            p: 0.03 },
+      { tok: " what",        p: 0.02 },
+    ]},
+    { picked: " ask",     rank: 1, candidates: [
+      { tok: " ask",           p: 0.31 },
+      { tok: " make",          p: 0.14 },
+      { tok: " underestimate", p: 0.10 },
+      { tok: " lie",           p: 0.08 },
+      { tok: " accept",        p: 0.06 },
+      { tok: " let",           p: 0.06 },
+      { tok: " argue",         p: 0.05 },
+      { tok: " show",          p: 0.04 },
+      { tok: " trust",         p: 0.04 },
+      { tok: " give",          p: 0.03 },
+    ]},
+    { picked: " a",       rank: 1, candidates: [
+      { tok: " a",         p: 0.66 },
+      { tok: " the",       p: 0.08 },
+      { tok: " your",      p: 0.06 },
+      { tok: " for",       p: 0.04 },
+      { tok: " without",   p: 0.04 },
+      { tok: " questions", p: 0.03 },
+      { tok: " them",      p: 0.03 },
+      { tok: " too",       p: 0.02 },
+      { tok: " anything",  p: 0.02 },
+      { tok: " yes",       p: 0.01 },
+    ]},
+    { picked: " question", rank: 1, candidates: [
+      { tok: " question", p: 0.61 },
+      { tok: " witness",  p: 0.09 },
+      { tok: " juror",    p: 0.05 },
+      { tok: " yes",      p: 0.04 },
+      { tok: " judge",    p: 0.03 },
+      { tok: " leading",  p: 0.03 },
+      { tok: " hostile",  p: 0.03 },
+      { tok: " follow",   p: 0.03 },
+      { tok: " simple",   p: 0.02 },
+      { tok: " client",   p: 0.02 },
+    ]},
+    { picked: " you",     rank: 1, candidates: [
+      { tok: " you",     p: 0.53 },
+      { tok: " that",    p: 0.14 },
+      { tok: " whose",   p: 0.09 },
+      { tok: " without", p: 0.06 },
+      { tok: " unless",  p: 0.05 },
+      { tok: " with",    p: 0.04 },
+      { tok: " if",      p: 0.03 },
+      { tok: " where",   p: 0.02 },
+      { tok: " when",    p: 0.02 },
+      { tok: " in",      p: 0.01 },
+    ]},
+    { picked: " do",      rank: 1, candidates: [
+      { tok: " do",      p: 0.24 },
+      { tok: " don",     p: 0.22 },
+      { tok: " can",     p: 0.14 },
+      { tok: " know",    p: 0.10 },
+      { tok: " already", p: 0.09 },
+      { tok: " haven",   p: 0.07 },
+      { tok: " aren",    p: 0.04 },
+      { tok: " should",  p: 0.04 },
+      { tok: " have",    p: 0.03 },
+      { tok: " need",    p: 0.03 },
+    ]},
+    { picked: " not",     rank: 1, candidates: [
+      { tok: " not",     p: 0.52 },
+      { tok: "n't",      p: 0.28 },
+      { tok: " already", p: 0.06 },
+      { tok: " know",    p: 0.05 },
+      { tok: "?",        p: 0.03 },
+      { tok: ".",        p: 0.02 },
+      { tok: " the",     p: 0.01 },
+      { tok: ",",        p: 0.01 },
+      { tok: " yet",     p: 0.01 },
+      { tok: " also",    p: 0.01 },
+    ]},
+    { picked: " already", rank: 1, candidates: [
+      { tok: " already",    p: 0.28 },
+      { tok: " know",       p: 0.22 },
+      { tok: " have",       p: 0.12 },
+      { tok: " want",       p: 0.08 },
+      { tok: " see",        p: 0.06 },
+      { tok: " think",      p: 0.05 },
+      { tok: " understand", p: 0.04 },
+      { tok: " realize",    p: 0.03 },
+      { tok: " actually",   p: 0.03 },
+      { tok: " even",       p: 0.03 },
+    ]},
+    { picked: " know",    rank: 1, candidates: [
+      { tok: " know",       p: 0.84 },
+      { tok: " have",       p: 0.05 },
+      { tok: " understand", p: 0.03 },
+      { tok: " feel",       p: 0.02 },
+      { tok: " believe",    p: 0.02 },
+      { tok: " see",        p: 0.01 },
+      { tok: " realize",    p: 0.01 },
+      { tok: " accept",     p: 0.01 },
+      { tok: " want",       p: 0.01 },
+      { tok: " own",        p: 0.01 },
+    ]},
+    { picked: " the",     rank: 1, candidates: [
+      { tok: " the",      p: 0.45 },
+      { tok: " what",     p: 0.17 },
+      { tok: " how",      p: 0.09 },
+      { tok: " about",    p: 0.07 },
+      { tok: ",",         p: 0.05 },
+      { tok: " who",      p: 0.04 },
+      { tok: " why",      p: 0.03 },
+      { tok: " or",       p: 0.03 },
+      { tok: " yourself", p: 0.02 },
+      { tok: ".",         p: 0.02 },
+    ]},
+    { picked: " answer",  rank: 1, candidates: [
+      { tok: " answer",   p: 0.58 },
+      { tok: " truth",    p: 0.09 },
+      { tok: " outcome",  p: 0.05 },
+      { tok: " response", p: 0.04 },
+      { tok: " facts",    p: 0.04 },
+      { tok: " law",      p: 0.03 },
+      { tok: " rules",    p: 0.03 },
+      { tok: " judge",    p: 0.03 },
+      { tok: " real",     p: 0.02 },
+      { tok: " end",      p: 0.02 },
+    ]},
+    { picked: " to",      rank: 1, candidates: [
+      { tok: " to",         p: 0.78 },
+      { tok: ".",           p: 0.08 },
+      { tok: ",",           p: 0.03 },
+      { tok: " of",         p: 0.02 },
+      { tok: " is",         p: 0.02 },
+      { tok: " already",    p: 0.02 },
+      { tok: "?",           p: 0.01 },
+      { tok: " yourself",   p: 0.01 },
+      { tok: " beforehand", p: 0.01 },
+      { tok: " ahead",      p: 0.01 },
+    ]},
+    { picked: ".",        rank: 1, candidates: [
+      { tok: ".",         p: 0.42 },
+      { tok: ",",         p: 0.20 },
+      { tok: " in",       p: 0.08 },
+      { tok: " ahead",    p: 0.06 },
+      { tok: " yourself", p: 0.05 },
+      { tok: " —",        p: 0.04 },
+      { tok: " already",  p: 0.04 },
+      { tok: " begin",    p: 0.03 },
+      { tok: " \"",       p: 0.03 },
+      { tok: " before",   p: 0.03 },
+    ]},
+  ];
+
+  const AR_NOTES = {
+    0: `<strong>Picked the #2 candidate, not the top.</strong> At temperature &gt; 0, the model samples from the distribution — it doesn't always pick the most likely token. If we had gone greedy here, we'd be writing about "<code> to</code>" — probably something like "is to prepare thoroughly" — not courtroom tactics.`,
+    1: `<strong>The distribution changed completely.</strong> One word of context (<code> never</code>) flipped what's likely next — from infinitives and adverbs to verbs that follow "never."`,
+    5: `<strong>Heads up:</strong> <code>n't</code> is hot on <code> not</code>'s tail. Had the model picked it, we'd be writing "don't" — same meaning, different token path. Tokenization decides which paths are even available.`,
+    8: `<strong>84% confident.</strong> The context has nearly locked in. Once you're mid-sentence, most choices become forced by everything that came before.`,
+    11: `<code> to</code> at 78% — the model is barely making a choice anymore. The sentence is writing itself.`,
+    12: `<strong>And done.</strong> 13 loops, 13 predictions, one finished sentence. No plan, no forethought — just thirteen local guesses stitched together. <em>That</em> is the mechanism.`,
+  };
+
+  (function initAutoregressiveDemo() {
+    const barsEl = document.getElementById('ar-bars');
+    const genEl = document.getElementById('ar-generated');
+    const noteEl = document.getElementById('ar-note');
+    const stepNumEl = document.getElementById('ar-step-num');
+    const playBtn = document.getElementById('ar-play');
+    const stepBtn = document.getElementById('ar-step');
+    const resetBtn = document.getElementById('ar-reset');
+    if (!barsEl || !playBtn) return;
+
+    const state = { step: 0, playing: false, timer: null };
+    const INTERVAL_MS = 1400;
+
+    function formatToken(tok) {
+      if (tok.startsWith(' ')) return `<span class="space-dot">·</span>${escapeHtml(tok.slice(1))}`;
+      return escapeHtml(tok);
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function renderBars(step) {
+      const maxProb = Math.max(...step.candidates.map(c => c.p));
+      barsEl.innerHTML = step.candidates.map((c) => {
+        const widthPct = (c.p / maxProb) * 100;
+        const pct = (c.p * 100).toFixed(1);
+        const isPicked = c.tok === step.picked;
+        return `
+          <div class="bar-row${isPicked ? ' picked' : ''}">
+            <div class="bar-token">${formatToken(c.tok)}</div>
+            <div class="bar-track"><div class="bar-fill" style="width: ${widthPct}%"></div></div>
+            <div class="bar-pct">${pct}%</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderGenerated() {
+      genEl.innerHTML = AR_STEPS.slice(0, state.step).map((s, i) => {
+        const colorClass = 'c' + ((i % 6) + 1);
+        return `<span class="tok ${colorClass}">${formatToken(s.picked)}</span>`;
+      }).join('');
+    }
+
+    function renderNote(idx) {
+      const custom = AR_NOTES[idx];
+      if (custom) {
+        noteEl.innerHTML = custom;
+      } else {
+        const tok = AR_STEPS[idx].picked;
+        noteEl.innerHTML = `Picked <code>${formatToken(tok)}</code> — the top candidate. One more guess done; one more token locked in.`;
+      }
+      noteEl.classList.toggle('note-sampling', idx === 0);
+    }
+
+    function renderDone() {
+      barsEl.innerHTML = `<div class="ar-done">End of sequence. The model picked <code>.</code> — a period, which usually terminates a sentence.</div>`;
+      noteEl.innerHTML = AR_NOTES[12];
+      noteEl.classList.remove('note-sampling');
+    }
+
+    function updateControls() {
+      if (state.playing) {
+        playBtn.textContent = '❚❚ Pause';
+      } else if (state.step >= AR_STEPS.length) {
+        playBtn.textContent = '↺ Replay';
+      } else if (state.step === 0) {
+        playBtn.textContent = '▶ Play';
+      } else {
+        playBtn.textContent = '▶ Resume';
+      }
+      stepBtn.disabled = state.playing || state.step >= AR_STEPS.length;
+      resetBtn.disabled = state.step === 0 && !state.playing;
+    }
+
+    function render() {
+      renderGenerated();
+      stepNumEl.textContent = Math.min(state.step + 1, AR_STEPS.length);
+      if (state.step < AR_STEPS.length) {
+        renderBars(AR_STEPS[state.step]);
+        renderNote(state.step);
+      } else {
+        renderDone();
+        stepNumEl.textContent = AR_STEPS.length;
+      }
+      updateControls();
+    }
+
+    function advance() {
+      if (state.step >= AR_STEPS.length) return;
+      state.step += 1;
+      render();
+    }
+
+    function play() {
+      if (state.step >= AR_STEPS.length) {
+        // Replay from start
+        state.step = 0;
+        render();
+      }
+      state.playing = true;
+      updateControls();
+      // Advance immediately for responsiveness, then tick.
+      advance();
+      state.timer = setInterval(() => {
+        if (!state.playing) return;
+        if (state.step >= AR_STEPS.length) {
+          pause();
+          return;
+        }
+        advance();
+      }, INTERVAL_MS);
+    }
+
+    function pause() {
+      state.playing = false;
+      if (state.timer) { clearInterval(state.timer); state.timer = null; }
+      updateControls();
+    }
+
+    function reset() {
+      pause();
+      state.step = 0;
+      render();
+    }
+
+    playBtn.addEventListener('click', () => {
+      if (state.playing) pause();
+      else play();
+    });
+
+    stepBtn.addEventListener('click', () => {
+      if (!state.playing) advance();
+    });
+
+    resetBtn.addEventListener('click', reset);
+
+    render();
   })();
 </script>
 </body>
