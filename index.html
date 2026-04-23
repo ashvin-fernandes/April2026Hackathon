@@ -1213,6 +1213,48 @@
       </ul>
     </div>
   </section>
+
+  <section class="chapter" id="chapter-hallucinations">
+    <div class="eyebrow">Chapter 3</div>
+    <h2>Hallucinations aren't bugs. They're the mechanism.</h2>
+    <p class="lede">
+      If the whole job is predicting a plausible next token (Chapter 1), what happens when plausible and true come apart? The model keeps predicting. It has no separate "do I actually know this?" check wired in by default — so when the training data doesn't contain the real answer, it confidently produces something that <em>looks</em> like one. In 2023, a New York lawyer learned this the expensive way.
+    </p>
+
+    <div class="demo">
+      <div class="prompt-label">Lawyer asks ChatGPT</div>
+      <div class="prompt">Find cases where a statute of limitations was tolled for a Montreal Convention claim.</div>
+
+      <div class="prompt-label">ChatGPT returns</div>
+      <div class="pipe-text" style="text-align: left; font-size: 15px; line-height: 1.7;">
+        <strong>Varghese v. China Southern Airlines Co., Ltd.</strong>,<br />
+        925 F.3d 1339 (11th Cir. 2019).<br />
+        <span style="color: var(--ink-soft);">Holding that the Montreal Convention's two-year limitations period was tolled during the pendency of a related bankruptcy proceeding...</span>
+      </div>
+
+      <div class="annotations">
+        <p><strong>None of this exists.</strong> The case is fabricated. So is the quote. So is the holding. The citation format is correct — volume, reporter, court, year are all in the right shape a real citation would take — but there is no <em>Varghese v. China Southern Airlines</em> in the Federal Reporter, or anywhere else. The model produced a plausible-looking citation because that's what "a citation on tolling under the Montreal Convention" <em>looks like</em> statistically. It was never checking whether the case existed; nothing in the next-token loop asks that question.</p>
+      </div>
+    </div>
+
+    <div class="annotations">
+      <p>The prompt above is a reconstruction of what happened in <em>Mata v. Avianca, Inc.</em>, 678 F. Supp. 3d 443 (S.D.N.Y. 2023). Attorney Steven Schwartz used ChatGPT to research a brief opposing a motion to dismiss, and filed it containing six fabricated opinions — <em>Varghese</em>, <em>Shaboon</em>, <em>Petersen</em>, <em>Martinez</em>, <em>Durden</em>, and <em>Miller</em>. When opposing counsel and Judge P. Kevin Castel couldn't find the cases, Schwartz went back to ChatGPT and asked if they were real. ChatGPT said yes. He filed <em>that</em> too. On June 22, 2023, the court sanctioned Schwartz, his colleague Peter LoDuca, and their firm Levidow, Levidow &amp; Oberman $5,000 and ordered them to notify each judge whose name had been forged onto a fake opinion.<sup>1</sup></p>
+
+      <p>Why does this happen? A few things to hold together:</p>
+      <ul>
+        <li><strong>The training objective rewards plausibility, not truth.</strong> OpenAI's own write-up on the topic puts it bluntly: "standard training and evaluation procedures reward guessing over acknowledging uncertainty." A model that says "I don't know" gets penalized on benchmarks that score only correct answers; a model that guesses confidently sometimes gets it right and is never worse off for bluffing.<sup>2</sup></li>
+        <li><strong>"Plausible citation" is a pattern the model learned very well.</strong> Legal reporters, volume numbers, court abbreviations, and pincites all follow strong regularities. Predicting tokens that fit that shape is <em>easy</em>. Predicting tokens that correspond to a real case that actually supports your argument is a completely different problem — one the model wasn't separately trained to solve.</li>
+        <li><strong>There is no default "I don't know" circuit — it has to be trained in.</strong> Anthropic's interpretability team has traced this inside Claude: the model has a default-on "can't answer" circuit that gets <em>suppressed</em> when a competing "known entity" feature fires. Ask about Michael Jordan, the known-entity feature fires, the refusal circuit shuts off, and the model answers. The researchers were able to induce hallucinations by artificially firing the known-entity feature for a made-up name — the model then confidently produced a biography for someone who doesn't exist. Hallucinations, on this view, are what happens when the known-entity signal misfires on something the model doesn't actually know.<sup>3</sup></li>
+        <li><strong>So what stops it?</strong> Post-training (RLHF, constitutional AI, etc.) teaches models to say "I don't know" more often, and tools like retrieval and citation-verification let the model check external sources before answering. Both help. Neither eliminates the underlying issue, because the underlying issue isn't a bug — it's the base mechanism showing through.</li>
+      </ul>
+
+      <p style="margin-top: 24px; font-size: 13px; color: var(--ink-faint);">
+        <sup>1</sup> <em>Mata v. Avianca, Inc.</em>, 678 F. Supp. 3d 443 (S.D.N.Y. 2023). Opinion and order on sanctions: <a href="https://law.justia.com/cases/federal/district-courts/new-york/nysdce/1:2022cv01461/575368/54/" style="color: var(--accent);">law.justia.com</a>. Background: <a href="https://en.wikipedia.org/wiki/Mata_v._Avianca,_Inc." style="color: var(--accent);">Wikipedia summary</a>.<br />
+        <sup>2</sup> OpenAI, <em>Why language models hallucinate</em> (Sept. 2025): <a href="https://openai.com/index/why-language-models-hallucinate/" style="color: var(--accent);">openai.com</a>.<br />
+        <sup>3</sup> Anthropic, <em>Tracing the thoughts of a large language model</em> (Mar. 2025): <a href="https://www.anthropic.com/research/tracing-thoughts-language-model" style="color: var(--accent);">anthropic.com</a>. Full paper, <em>On the Biology of a Large Language Model</em>: <a href="https://transformer-circuits.pub/2025/attribution-graphs/biology.html" style="color: var(--accent);">transformer-circuits.pub</a>. The "known entity" / default-refusal finding is one mechanism among several; the authors are explicit that it doesn't explain every hallucination.
+      </p>
+    </div>
+  </section>
   <!-- END PART 1 -->
 
   <!-- BEGIN PART 2: The inner workings of an LLM -->
