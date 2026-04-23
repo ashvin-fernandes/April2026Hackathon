@@ -1066,6 +1066,77 @@
     color: var(--accent);
   }
 
+  /* --- Chapter 5 (Part 1): Lost-in-the-middle chart --- */
+
+  .lim-chart-wrap {
+    width: 100%;
+    padding: 22px 20px 14px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin-top: 24px;
+  }
+
+  .lim-chart {
+    width: 100%;
+    height: auto;
+    display: block;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  .lim-axis-line {
+    stroke: var(--line);
+    stroke-width: 0.3;
+  }
+
+  .lim-grid-line {
+    stroke: var(--line);
+    stroke-width: 0.2;
+    stroke-dasharray: 0.8 0.8;
+  }
+
+  .lim-curve {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 0.8;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .lim-fill {
+    fill: var(--accent);
+    fill-opacity: 0.08;
+    stroke: none;
+  }
+
+  .lim-dot {
+    fill: var(--accent);
+    stroke: var(--bg-subtle);
+    stroke-width: 0.4;
+  }
+
+  .lim-middle-marker {
+    stroke: var(--highlight-end);
+    stroke-width: 0.4;
+    stroke-dasharray: 0.6 0.6;
+  }
+
+  .lim-label {
+    fill: var(--ink-faint);
+  }
+
+  .lim-middle-label {
+    fill: var(--highlight-start);
+    font-weight: 600;
+  }
+
+  .lim-caption {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--ink-faint);
+    line-height: 1.55;
+  }
+
   /* --- Chapter 1 autoregressive demo --- */
 
   .chapter-subsection {
@@ -1532,6 +1603,93 @@
         <sup>1</sup> Wei et al., <em>Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</em> (NeurIPS 2022): <a href="https://arxiv.org/abs/2201.11903" style="color: var(--accent);">arxiv.org/abs/2201.11903</a>.<br />
         <sup>2</sup> OpenAI, <em>Learning to reason with LLMs</em> (introduction of o1, Sept. 2024): <a href="https://openai.com/index/learning-to-reason-with-llms/" style="color: var(--accent);">openai.com</a>.<br />
         <sup>3</sup> Anthropic, <em>Building with extended thinking</em> (Claude docs): <a href="https://platform.claude.com/docs/en/docs/build-with-claude/extended-thinking" style="color: var(--accent);">platform.claude.com</a>.
+      </p>
+    </div>
+  </section>
+
+  <section class="chapter" id="chapter-context-limits">
+    <div class="eyebrow">Chapter 5</div>
+    <h2>Long documents aren't read evenly.</h2>
+    <p class="lede">
+      You might expect that if you paste a 200-page contract into an LLM, it reads the whole thing with equal attention. It doesn't. A Stanford-led team documented the pattern in 2023 — the now-famous <em>"lost in the middle"</em> effect — where models recall information noticeably better when it sits at the beginning or end of a long context than when it's buried somewhere in the middle.
+    </p>
+
+    <div class="demo">
+      <div class="chart-header">
+        <div class="chart-title">Recall accuracy by position in context · schematic after Liu et al. 2023</div>
+        <div class="chart-sub">the U-shape holds across many models, including long-context ones</div>
+      </div>
+
+      <div class="lim-chart-wrap">
+        <svg class="lim-chart" viewBox="0 0 130 62" preserveAspectRatio="xMidYMid meet" aria-label="Accuracy by position chart">
+          <!-- Grid lines at 25/50/75 accuracy -->
+          <line class="lim-grid-line" x1="22" y1="16.25" x2="126" y2="16.25" />
+          <line class="lim-grid-line" x1="22" y1="27.5"  x2="126" y2="27.5" />
+          <line class="lim-grid-line" x1="22" y1="38.75" x2="126" y2="38.75" />
+
+          <!-- Middle marker -->
+          <line class="lim-middle-marker" x1="74" y1="5" x2="74" y2="50" />
+
+          <!-- Fill under the curve (U-shape) -->
+          <path class="lim-fill" d="M 22,16.25 L 32.4,19.4 L 42.8,23.9 L 53.2,28.4 L 63.6,31.1 L 74,32.0 L 84.4,30.65 L 94.8,26.6 L 105.2,22.1 L 115.6,17.6 L 126,14.9 L 126,50 L 22,50 Z" />
+
+          <!-- The curve -->
+          <polyline class="lim-curve"
+            points="22,16.25 32.4,19.4 42.8,23.9 53.2,28.4 63.6,31.1 74,32.0 84.4,30.65 94.8,26.6 105.2,22.1 115.6,17.6 126,14.9" />
+
+          <!-- Data dots -->
+          <circle class="lim-dot" cx="22"    cy="16.25" r="0.9" />
+          <circle class="lim-dot" cx="32.4"  cy="19.4"  r="0.9" />
+          <circle class="lim-dot" cx="42.8"  cy="23.9"  r="0.9" />
+          <circle class="lim-dot" cx="53.2"  cy="28.4"  r="0.9" />
+          <circle class="lim-dot" cx="63.6"  cy="31.1"  r="0.9" />
+          <circle class="lim-dot" cx="74"    cy="32.0"  r="1.2" />
+          <circle class="lim-dot" cx="84.4"  cy="30.65" r="0.9" />
+          <circle class="lim-dot" cx="94.8"  cy="26.6"  r="0.9" />
+          <circle class="lim-dot" cx="105.2" cy="22.1"  r="0.9" />
+          <circle class="lim-dot" cx="115.6" cy="17.6"  r="0.9" />
+          <circle class="lim-dot" cx="126"   cy="14.9"  r="0.9" />
+
+          <!-- Y-axis -->
+          <line class="lim-axis-line" x1="22" y1="5" x2="22" y2="50" />
+          <text class="lim-label" x="20" y="5.8"  font-size="2.2" text-anchor="end">100%</text>
+          <text class="lim-label" x="20" y="16.8" font-size="2.2" text-anchor="end">75%</text>
+          <text class="lim-label" x="20" y="28.1" font-size="2.2" text-anchor="end">50%</text>
+          <text class="lim-label" x="20" y="39.3" font-size="2.2" text-anchor="end">25%</text>
+          <text class="lim-label" x="20" y="50.5" font-size="2.2" text-anchor="end">0%</text>
+
+          <!-- X-axis -->
+          <line class="lim-axis-line" x1="22" y1="50" x2="126" y2="50" />
+          <text class="lim-label" x="22"  y="54.5" font-size="2.2" text-anchor="middle">start</text>
+          <text class="lim-label" x="74"  y="54.5" font-size="2.2" text-anchor="middle">middle</text>
+          <text class="lim-label" x="126" y="54.5" font-size="2.2" text-anchor="middle">end</text>
+
+          <!-- Axis titles -->
+          <text class="lim-label" x="74"  y="60"   font-size="2.1" text-anchor="middle" style="letter-spacing: 0.1em; text-transform: uppercase;">position of answer in long context</text>
+          <text class="lim-label" x="6"   y="27.5" font-size="2.1" text-anchor="middle" transform="rotate(-90, 6, 27.5)" style="letter-spacing: 0.1em; text-transform: uppercase;">recall accuracy</text>
+
+          <!-- Middle annotation -->
+          <text class="lim-middle-label" x="74" y="9" font-size="2.3" text-anchor="middle">lowest here</text>
+        </svg>
+      </div>
+
+      <div class="lim-caption">
+        The x-axis is the position of a key piece of information placed inside a long document; the y-axis is how often the model finds it when asked. Accuracy sags in the middle — often by 20+ percentage points compared to the endpoints. Exact numbers vary by model and task; shape reproduces in Liu et al.'s Figure 5 across every model they tested.
+      </div>
+    </div>
+
+    <div class="annotations">
+      <p>A few things to pull out of this:</p>
+      <ul>
+        <li><strong>This isn't about running out of room.</strong> The effect shows up even in models explicitly trained for long contexts (100K+ tokens). It's not that the middle tokens aren't <em>there</em>; it's that the model doesn't attend to them as reliably. Position within the window matters independently of whether the window was exceeded.</li>
+        <li><strong>Why it happens (roughly):</strong> training data tends to have important information at the edges (introductions, conclusions, headlines, answers at the end of Q&amp;A), and attention mechanisms combined with positional encodings pick up on those priors. Models learn to weight the edges. It's less a bug than an inherited statistical habit.</li>
+        <li><strong>Prompting can claw a lot of it back.</strong> Anthropic ran needle-in-a-haystack tests on Claude 2.1 at its 200K-token window and found recall on buried facts was 27% by default — but a small prompt tweak (instructing the model to start its reply by quoting the most relevant sentence) jumped it to <strong>98%</strong>.<sup>2</sup> The signal was in there the whole time; the model needed to be told how to reach for it.</li>
+        <li><strong>Practical rule:</strong> when you're pasting a long document into a model, put the most important thing at the top (in the system/instructions) or as close as possible to the end (near the generation cursor). Middle-of-document is where recall quietly degrades and you won't notice unless you check.</li>
+      </ul>
+
+      <p style="margin-top: 24px; font-size: 13px; color: var(--ink-faint);">
+        <sup>1</sup> Liu et al., <em>Lost in the Middle: How Language Models Use Long Contexts</em> (TACL 2024; arXiv 2023): <a href="https://arxiv.org/abs/2307.03172" style="color: var(--accent);">arxiv.org/abs/2307.03172</a>. The chart above is a schematic of the paper's U-shape; for exact per-model numbers see Figure 5.<br />
+        <sup>2</sup> Anthropic, <em>Long context prompting for Claude 2.1</em>: <a href="https://www.anthropic.com/news/claude-2-1-prompting" style="color: var(--accent);">anthropic.com</a>.
       </p>
     </div>
   </section>
