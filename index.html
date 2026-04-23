@@ -1423,28 +1423,32 @@
 
     <div class="demo">
       <div class="prompt-label">The problem — same both times</div>
-      <div class="prompt">A lawyer's fee plus a filing fee totals $500. The lawyer's fee is $400 more than the filing fee. How much is the filing fee?</div>
+      <div class="prompt">What's 842,019 × 109,310?</div>
 
       <div class="ttb-split">
         <div class="ttb-side ttb-fast">
           <div class="ttb-side-head">
-            <div class="ttb-side-tag">Brief</div>
-            <div class="ttb-side-sub">"Answer in one sentence."</div>
+            <div class="ttb-side-tag">Just asked</div>
+            <div class="ttb-side-sub">(no reasoning instruction)</div>
           </div>
-          <div class="ttb-response">$100.</div>
+          <div class="ttb-response">92,025,517,890</div>
           <div class="ttb-verdict">Wrong.</div>
         </div>
 
         <div class="ttb-side ttb-slow">
           <div class="ttb-side-head">
-            <div class="ttb-side-tag">Step-by-step</div>
-            <div class="ttb-side-sub">"Think through this carefully."</div>
+            <div class="ttb-side-tag">Asked to reason</div>
+            <div class="ttb-side-sub">"…Reason it through."</div>
           </div>
           <div class="ttb-response">
-            Let F be the filing fee. Then the lawyer's fee is F&nbsp;+&nbsp;$400.<br />
-            Together, F&nbsp;+&nbsp;(F&nbsp;+&nbsp;$400)&nbsp;=&nbsp;$500.<br />
-            So 2F&nbsp;+&nbsp;$400&nbsp;=&nbsp;$500, which gives 2F&nbsp;=&nbsp;$100, so F&nbsp;=&nbsp;$50.<br />
-            <strong>The filing fee is $50.</strong>
+            Let me break this into parts:<br />
+            Split 109,310 into 100,000 + 9,000 + 300 + 10<br />
+            842,019 × 100,000 = 84,201,900,000<br />
+            842,019 × 9,000 = 7,578,171,000<br />
+            842,019 × 300 = 252,605,700<br />
+            842,019 × 10 = 8,420,190<br />
+            Adding:<br />
+            <strong>92,041,096,890.</strong>
           </div>
           <div class="ttb-verdict ttb-verdict-right">Correct.</div>
         </div>
@@ -1559,16 +1563,18 @@
     </p>
 
     <div class="demo">
-      <div class="prompt-label">User asks Claude</div>
-      <div class="prompt">What's 842019 × 109310?</div>
+      <div class="prompt-label">Lawyer asks ChatGPT</div>
+      <div class="prompt">Find cases where a statute of limitations was tolled for a Montreal Convention claim.</div>
 
-      <div class="prompt-label">Claude returns</div>
+      <div class="prompt-label">ChatGPT returns</div>
       <div class="pipe-text" style="text-align: left; font-size: 15px; line-height: 1.7;">
-        92,025,517,890
+        <strong>Varghese v. China Southern Airlines Co., Ltd.</strong>,<br />
+        925 F.3d 1339 (11th Cir. 2019).<br />
+        <span style="color: var(--ink-soft);">Holding that the Montreal Convention's two-year limitations period was tolled during the pendency of a related bankruptcy proceeding...</span>
       </div>
 
       <div class="annotations">
-        <p><strong>Wrong.</strong> The correct answer is <strong>92,041,096,890</strong> — off by about 15.6&nbsp;million. The model produced a number of the right size and shape (an 11-digit product is what 6-digits × 6-digits should yield) but not the right <em>number</em>. No hedging, no "I should double-check this," no "use a calculator." Just a confident, plausibly-shaped, wrong answer. If you weren't verifying, you'd never catch it.</p>
+        <p><strong>None of this exists.</strong> The case is fabricated. So is the quote. So is the holding. The citation format is correct — volume, reporter, court, year are all in the right shape a real citation would take — but there is no <em>Varghese v. China Southern Airlines</em> in the Federal Reporter, or anywhere else. The model produced a plausible-looking citation because that's what "a citation on tolling under the Montreal Convention" <em>looks like</em> statistically. It was never checking whether the case existed; nothing in the next-token loop asks that question.</p>
       </div>
     </div>
 
