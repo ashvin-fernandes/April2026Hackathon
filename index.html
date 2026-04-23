@@ -155,6 +155,53 @@
     margin: 0;
   }
 
+  /* --- Parts structure: PART 1 / PART 2 banners --- */
+
+  .part-header {
+    margin-top: 80px;
+    padding-top: 64px;
+    border-top: 2px solid var(--ink);
+  }
+
+  .part-header#part-1 {
+    margin-top: 56px;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .part-number {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+
+  .part-title {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+    margin: 0 0 18px;
+  }
+
+  .part-intro {
+    font-size: 18px;
+    color: var(--ink-soft);
+    max-width: 640px;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* First chapter of each part: drop the default .chapter separator,
+     since the part-header above it is already the visual break. */
+  .chapter.part-opener {
+    margin-top: 48px;
+    padding-top: 0;
+    border-top: none;
+  }
+
   .demo {
     background: var(--bg-panel);
     border: 1px solid var(--line);
@@ -948,6 +995,10 @@
   @media (max-width: 640px) {
     .page { padding: 40px 20px 64px; }
     h1 { font-size: 30px; }
+    .part-header { margin-top: 56px; padding-top: 40px; }
+    .part-title { font-size: 28px; }
+    .part-intro { font-size: 16px; }
+    .part-number { font-size: 10px; }
     .demo { padding: 24px 20px; }
     .prompt { font-size: 16px; padding: 14px 16px; }
     .bar-row { grid-template-columns: 96px 1fr 52px; gap: 10px; }
@@ -983,13 +1034,28 @@
       <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
     </svg>
   </button>
-  <header>
-    <div class="eyebrow">How AI Works · Chapter 1</div>
-    <h1>AI doesn't "know" the next word. It guesses.</h1>
+  <header class="site-header">
+    <div class="eyebrow">How AI Works</div>
+    <h1>A tour, without the hand-waving.</h1>
+    <p class="lede">
+      Large language models are famously a bit magical to use, and a bit confusing to explain. This site takes the confusing part one piece at a time — what's actually happening when you type a prompt, and what "meaning" looks like inside.
+    </p>
+  </header>
+
+  <!-- BEGIN PART 1: LLMs are word prediction engines -->
+  <section class="part-header" id="part-1">
+    <div class="part-number">Part One</div>
+    <h2 class="part-title">LLMs are word prediction engines</h2>
+    <p class="part-intro">Everything an LLM writes, it writes one token at a time, each drawn from a probability distribution. This part shows exactly what that loop looks like — and why it means there's no "answer" in the model's head waiting to come out.</p>
+  </section>
+
+  <section class="chapter part-opener" id="chapter-1">
+    <div class="eyebrow">Chapter 1</div>
+    <h2>AI doesn't "know" the next word. It guesses.</h2>
     <p class="lede">
       Every time an LLM writes, it's choosing from a ranked list of possible next pieces of text — called <em>tokens</em> — each with a probability. Here's what that looks like for one sentence.
     </p>
-  </header>
+  </section>
 
   <section class="demo">
     <div class="prompt-label">The model sees</div>
@@ -1067,7 +1133,7 @@
   </section>
 
   <section class="chapter" id="chapter-2">
-    <div class="eyebrow">How AI Works · Chapter 2</div>
+    <div class="eyebrow">Chapter 2</div>
     <h2>Wait, what is a token?</h2>
     <p class="lede">
       We've been throwing the word "tokens" around. Time to stop. Before a model can read any text, that text gets chopped into small pieces called <em>tokens</em>, and every token becomes a number. Everything the model actually does, it does on numbers. Here's the round-trip for a simple legal question.
@@ -1147,9 +1213,17 @@
       </ul>
     </div>
   </section>
+  <!-- END PART 1 -->
 
-  <section class="chapter" id="chapter-3">
-    <div class="eyebrow">How AI Works · Chapter 3</div>
+  <!-- BEGIN PART 2: The inner workings of an LLM -->
+  <section class="part-header" id="part-2">
+    <div class="part-number">Part Two</div>
+    <h2 class="part-title">The inner workings of an LLM</h2>
+    <p class="part-intro">Inside the model, tokens become vectors and meaning becomes geometry. A look at what actually happens between the input the model reads and the output it returns.</p>
+  </section>
+
+  <section class="chapter part-opener" id="chapter-3">
+    <div class="eyebrow">Chapter 3</div>
     <h2>Meaning lives in space</h2>
     <p class="lede">
       Once text is tokens and tokens are numbers, the model's next move is to turn each number into a <em>vector</em> — a long list of numbers that plants the token somewhere in a high-dimensional space. The beautiful part: the model learns these positions so that words with similar meanings end up close together. Below, 42 real English words embedded by GloVe into 50 dimensions, projected down to 2 so you can actually see them.
@@ -1178,6 +1252,7 @@
       </ul>
     </div>
   </section>
+  <!-- END PART 2 -->
 </div>
 
 <script>
