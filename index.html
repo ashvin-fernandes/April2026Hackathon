@@ -1178,20 +1178,6 @@
       svg.appendChild(line);
     }
 
-    // Per-category centroid — labels get pushed outward from it so they
-    // spread across each cluster instead of piling up in the center.
-    const centroids = {};
-    for (const d of EMBEDDING_DATA) {
-      if (!centroids[d.cat]) centroids[d.cat] = { sx: 0, sy: 0, n: 0 };
-      centroids[d.cat].sx += d.x;
-      centroids[d.cat].sy += d.y;
-      centroids[d.cat].n += 1;
-    }
-    for (const c of Object.values(centroids)) {
-      c.x = c.sx / c.n;
-      c.y = c.sy / c.n;
-    }
-
     // Two layers: all dots first, then all labels. This keeps every label
     // visually on top of every dot, so no later-drawn dot can obscure an
     // earlier-drawn word.
@@ -1202,8 +1188,6 @@
     const labelsLayer = document.createElementNS(NS, 'g');
     labelsLayer.setAttribute('class', 'labels-layer');
     svg.appendChild(labelsLayer);
-
-    const OFFSET = 0.22;
 
     EMBEDDING_DATA.forEach((d, i) => {
       const delay = (300 + i * 22) + 'ms';
@@ -1218,33 +1202,14 @@
       c.style.setProperty('--delay', delay);
       dotsLayer.appendChild(c);
 
-      // Label offset: direction away from cluster centroid, at a fixed
-      // distance. Ties (point near centroid) fall back to a rightward
-      // offset so we always have a well-defined direction.
-      const cen = centroids[d.cat];
-      let dx = d.x - cen.x;
-      let dy = d.y - cen.y;
-      const len = Math.hypot(dx, dy);
-      if (len > 0.02) {
-        dx = (dx / len) * OFFSET;
-        dy = (dy / len) * OFFSET;
-      } else {
-        dx = OFFSET;
-        dy = 0;
-      }
-
       const t = document.createElementNS(NS, 'text');
       t.setAttribute('class', 'point-label');
-      t.setAttribute('x', d.x + dx);
-      t.setAttribute('y', -(d.y + dy));
+      t.setAttribute('x', d.x + 0.14);
+      t.setAttribute('y', -d.y);
       t.setAttribute('font-size', '0.17');
       t.setAttribute('data-cat', d.cat);
       t.setAttribute('data-word', d.word);
       t.style.setProperty('--delay', delay);
-      // Anchor label by its nearest edge so it grows away from the dot.
-      if (dx < -0.04) t.setAttribute('text-anchor', 'end');
-      else if (dx > 0.04) t.setAttribute('text-anchor', 'start');
-      else t.setAttribute('text-anchor', 'middle');
       t.textContent = d.word;
       labelsLayer.appendChild(t);
     });
