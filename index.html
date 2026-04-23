@@ -1418,7 +1418,7 @@
     <div class="eyebrow">Chapter 2</div>
     <h2>LLMs think by writing.</h2>
     <p class="lede">
-      An important understanding here is that LLMs do not think or reason before they write, the writing IS the reasoning. This means that forcing an LLM to use fewer words can hurt its performance, and conversely letting it write more can improve their performance.
+      An important insight here is that LLMs do not think or reason before they write, the writing IS the reasoning. This means that forcing an LLM to use fewer words can hurt its performance, and conversely letting it write more can improve their performance.
     </p>
 
     <div class="demo">
@@ -1429,7 +1429,7 @@
         <div class="ttb-side ttb-fast">
           <div class="ttb-side-head">
             <div class="ttb-side-tag">Just asked</div>
-            <div class="ttb-side-sub">(no reasoning instruction)</div>
+            <div class="ttb-side-sub">(no additional instructions)</div>
           </div>
           <div class="ttb-response">92,025,517,890</div>
           <div class="ttb-verdict">Wrong.</div>
@@ -1453,17 +1453,15 @@
           <div class="ttb-verdict ttb-verdict-right">Correct.</div>
         </div>
       </div>
-      <p style="margin-top: 18px; text-align: right; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: var(--ink-faint); letter-spacing: 0.06em;">Sonnet 4.6</p>
+      <p style="margin-top: 18px; text-align: right; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: var(--ink-faint); letter-spacing: 0.06em;">Sonnet 4.6. Note that Opus may actually call a math tool to solve this!</p>
     </div>
 
     <div class="annotations">
-      <p>The model on the left isn't dumber. It's the same model. What changed is whether it had <em>tokens to think with</em>.</p>
-      <ul>
-        <li><strong>Each token takes a fixed amount of compute.</strong> The model runs one forward pass per token. That pass can do a lot — billions of parameters' worth — but it's a fixed amount. A problem that needs two multiplications and a subtraction to solve can't fit into one forward pass. It has to be spread across several, and each one needs a token to live on.</li>
-        <li><strong>Intermediate tokens are scratch paper.</strong> When the "step-by-step" version writes <em>"Let F be the filing fee,"</em> that isn't throat-clearing. It's the model creating a variable in its own output stream that later tokens can read and operate on. Take that scratch away and there is no place for "F" to live.</li>
-        <li><strong>This has a name: <em>chain-of-thought</em> prompting.</strong><sup>1</sup> The canonical finding: simply adding "let's think step by step" to a prompt improves accuracy on math and logic benchmarks dramatically — often by double-digit percentage points. The model didn't get smarter. It got room to work.</li>
-        <li><strong>Modern "reasoning models" bake this in.</strong> OpenAI's o1<sup>2</sup> and Claude's extended-thinking mode<sup>3</sup> produce long internal reasoning traces before the visible answer. Those tokens are sometimes hidden from you, but they are doing the arithmetic.</li>
-        <li><strong>When brief output is fine.</strong> Factual lookup or simple generation doesn't benefit from extra tokens. The "tokens = computation" effect only kicks in when the task genuinely needs multi-step work. Practical rule when you're prompting: <em>don't force brevity on a reasoning task</em>. Let the model think; if you need a short final answer, ask for a summary at the end.</li>
+
+        <li>Math is normally trivial for computers, but LLMs can run into issues. For simple math problems using common numbers, LLMs will usually get the answer right. Those problems are part of the LLMs' training data, so the model will be strongly pointed towards the right answer. </li>
+        <li>But for uncommon equations like the one above, the LLM is just doing its best to get to an answer that seems plausible. This is what's scary about AI halllucinations. The answers they give seem correct, because they've been heavily trained to look correct! </li>
+        <li>You may have seen some LLMs with a <em>thinking</em> section before they give out their final output. This is partially marketing, but as seen above, giving the LLM additional tokens to reason with can improve performance. However, those thinking tokens are not a special internal part of the AI, they're exactly the same as the tokens in the final output. Other models may still be doing this "thinking" but not showing it to you in the output.</li>
+        <li>In this particular case, it's probably best just to ask the AI to use a calculator tool, or write a short script to get the answer.</li>
       </ul>
 
       <p style="margin-top: 24px; font-size: 13px; color: var(--ink-faint);">
@@ -1474,8 +1472,58 @@
     </div>
   </section>
 
-  <section class="chapter" id="chapter-2">
+  <section class="chapter" id="chapter-hallucinations">
     <div class="eyebrow">Chapter 3</div>
+    <h2>Hallucinations aren't bugs. They're the mechanism.</h2>
+    <p class="lede">
+      If the whole job is predicting a plausible next token (Chapter 1), what happens when plausible and true come apart? The model keeps predicting. It has no separate "do I actually know this?" check wired in by default — so when the training data doesn't contain the real answer, it confidently produces something that <em>looks</em> like one. In 2023, a New York lawyer learned this the expensive way.
+    </p>
+
+    <div class="demo">
+      <div class="prompt-label">Lawyer asks ChatGPT</div>
+      <div class="prompt">Find cases where a statute of limitations was tolled for a Montreal Convention claim.</div>
+
+      <div class="prompt-label">ChatGPT returns</div>
+      <div class="pipe-text" style="text-align: left; font-size: 15px; line-height: 1.7;">
+        <strong>Varghese v. China Southern Airlines Co., Ltd.</strong>,<br />
+        925 F.3d 1339 (11th Cir. 2019).<br />
+        <span style="color: var(--ink-soft);">Holding that the Montreal Convention's two-year limitations period was tolled during the pendency of a related bankruptcy proceeding...</span>
+      </div>
+
+      <div class="annotations">
+        <p><strong>None of this exists.</strong> The case is fabricated. So is the quote. So is the holding. The citation format is correct — volume, reporter, court, year are all in the right shape a real citation would take — but there is no <em>Varghese v. China Southern Airlines</em> in the Federal Reporter, or anywhere else. The model produced a plausible-looking citation because that's what "a citation on tolling under the Montreal Convention" <em>looks like</em> statistically. It was never checking whether the case existed; nothing in the next-token loop asks that question.</p>
+      </div>
+    </div>
+
+    <div class="annotations">
+      <p>The prompt above is a reconstruction of what happened in <em>Mata v. Avianca, Inc.</em>, 678 F. Supp. 3d 443 (S.D.N.Y. 2023). Attorney Steven Schwartz used ChatGPT to research a brief opposing a motion to dismiss, and filed it containing six fabricated opinions — <em>Varghese</em>, <em>Shaboon</em>, <em>Petersen</em>, <em>Martinez</em>, <em>Durden</em>, and <em>Miller</em>. When opposing counsel and Judge P. Kevin Castel couldn't find the cases, Schwartz went back to ChatGPT and asked if they were real. ChatGPT said yes. He filed <em>that</em> too. On June 22, 2023, the court sanctioned Schwartz, his colleague Peter LoDuca, and their firm Levidow, Levidow &amp; Oberman $5,000 and ordered them to notify each judge whose name had been forged onto a fake opinion.<sup>1</sup></p>
+
+      <p>Why does this happen? A few things to hold together:</p>
+      <ul>
+        <li><strong>The training objective rewards plausibility, not truth.</strong> OpenAI's own write-up on the topic puts it bluntly: "standard training and evaluation procedures reward guessing over acknowledging uncertainty." A model that says "I don't know" gets penalized on benchmarks that score only correct answers; a model that guesses confidently sometimes gets it right and is never worse off for bluffing.<sup>2</sup></li>
+        <li><strong>"Plausible citation" is a pattern the model learned very well.</strong> Legal reporters, volume numbers, court abbreviations, and pincites all follow strong regularities. Predicting tokens that fit that shape is <em>easy</em>. Predicting tokens that correspond to a real case that actually supports your argument is a completely different problem — one the model wasn't separately trained to solve.</li>
+        <li><strong>There is no default "I don't know" circuit — it has to be trained in.</strong> Anthropic's interpretability team has traced this inside Claude: the model has a default-on "can't answer" circuit that gets <em>suppressed</em> when a competing "known entity" feature fires. Ask about Michael Jordan, the known-entity feature fires, the refusal circuit shuts off, and the model answers. The researchers were able to induce hallucinations by artificially firing the known-entity feature for a made-up name — the model then confidently produced a biography for someone who doesn't exist. Hallucinations, on this view, are what happens when the known-entity signal misfires on something the model doesn't actually know.<sup>3</sup></li>
+        <li><strong>So what stops it?</strong> Post-training (RLHF, constitutional AI, etc.) teaches models to say "I don't know" more often, and tools like retrieval and citation-verification let the model check external sources before answering. Both help. Neither eliminates the underlying issue, because the underlying issue isn't a bug — it's the base mechanism showing through.</li>
+      </ul>
+
+      <p style="margin-top: 24px; font-size: 13px; color: var(--ink-faint);">
+        <sup>1</sup> <em>Mata v. Avianca, Inc.</em>, 678 F. Supp. 3d 443 (S.D.N.Y. 2023). Opinion and order on sanctions: <a href="https://law.justia.com/cases/federal/district-courts/new-york/nysdce/1:2022cv01461/575368/54/" style="color: var(--accent);">law.justia.com</a>. Background: <a href="https://en.wikipedia.org/wiki/Mata_v._Avianca,_Inc." style="color: var(--accent);">Wikipedia summary</a>.<br />
+        <sup>2</sup> OpenAI, <em>Why language models hallucinate</em> (Sept. 2025): <a href="https://openai.com/index/why-language-models-hallucinate/" style="color: var(--accent);">openai.com</a>.<br />
+        <sup>3</sup> Anthropic, <em>Tracing the thoughts of a large language model</em> (Mar. 2025): <a href="https://www.anthropic.com/research/tracing-thoughts-language-model" style="color: var(--accent);">anthropic.com</a>. Full paper, <em>On the Biology of a Large Language Model</em>: <a href="https://transformer-circuits.pub/2025/attribution-graphs/biology.html" style="color: var(--accent);">transformer-circuits.pub</a>. The "known entity" / default-refusal finding is one mechanism among several; the authors are explicit that it doesn't explain every hallucination.
+      </p>
+    </div>
+  </section>
+  <!-- END PART 1 -->
+
+  <!-- BEGIN PART 2: The inner workings of an LLM -->
+  <section class="part-header" id="part-2">
+    <div class="part-number">Part Two</div>
+    <h2 class="part-title">The inner workings of an LLM</h2>
+    <p class="part-intro">Inside the model, tokens become vectors and meaning becomes geometry. A look at what actually happens between the input the model reads and the output it returns.</p>
+  </section>
+
+  <section class="chapter part-opener" id="chapter-2">
+    <div class="eyebrow">Chapter 1</div>
     <h2>Wait, what is a token?</h2>
     <p class="lede">
       We've been throwing the word "tokens" around. Time to stop. Before a model can read any text, that text gets chopped into small pieces called <em>tokens</em>, and every token becomes a number. Everything the model actually does, it does on numbers. Here's the round-trip for a simple legal question.
@@ -1556,145 +1604,8 @@
     </div>
   </section>
 
-  <section class="chapter" id="chapter-hallucinations">
-    <div class="eyebrow">Chapter 4</div>
-    <h2>Hallucinations aren't bugs. They're the mechanism.</h2>
-    <p class="lede">
-      If the whole job is predicting a plausible next token (Chapter 1), what happens when plausible and true come apart? The model keeps predicting. It has no separate "do I actually know this?" check wired in by default — so when the training data doesn't contain the real answer, it confidently produces something that <em>looks</em> like one. In 2023, a New York lawyer learned this the expensive way.
-    </p>
-
-    <div class="demo">
-      <div class="prompt-label">Lawyer asks ChatGPT</div>
-      <div class="prompt">Find cases where a statute of limitations was tolled for a Montreal Convention claim.</div>
-
-      <div class="prompt-label">ChatGPT returns</div>
-      <div class="pipe-text" style="text-align: left; font-size: 15px; line-height: 1.7;">
-        <strong>Varghese v. China Southern Airlines Co., Ltd.</strong>,<br />
-        925 F.3d 1339 (11th Cir. 2019).<br />
-        <span style="color: var(--ink-soft);">Holding that the Montreal Convention's two-year limitations period was tolled during the pendency of a related bankruptcy proceeding...</span>
-      </div>
-
-      <div class="annotations">
-        <p><strong>None of this exists.</strong> The case is fabricated. So is the quote. So is the holding. The citation format is correct — volume, reporter, court, year are all in the right shape a real citation would take — but there is no <em>Varghese v. China Southern Airlines</em> in the Federal Reporter, or anywhere else. The model produced a plausible-looking citation because that's what "a citation on tolling under the Montreal Convention" <em>looks like</em> statistically. It was never checking whether the case existed; nothing in the next-token loop asks that question.</p>
-      </div>
-    </div>
-
-    <div class="annotations">
-      <p>The prompt above is a reconstruction of what happened in <em>Mata v. Avianca, Inc.</em>, 678 F. Supp. 3d 443 (S.D.N.Y. 2023). Attorney Steven Schwartz used ChatGPT to research a brief opposing a motion to dismiss, and filed it containing six fabricated opinions — <em>Varghese</em>, <em>Shaboon</em>, <em>Petersen</em>, <em>Martinez</em>, <em>Durden</em>, and <em>Miller</em>. When opposing counsel and Judge P. Kevin Castel couldn't find the cases, Schwartz went back to ChatGPT and asked if they were real. ChatGPT said yes. He filed <em>that</em> too. On June 22, 2023, the court sanctioned Schwartz, his colleague Peter LoDuca, and their firm Levidow, Levidow &amp; Oberman $5,000 and ordered them to notify each judge whose name had been forged onto a fake opinion.<sup>1</sup></p>
-
-      <p>Why does this happen? A few things to hold together:</p>
-      <ul>
-        <li><strong>The training objective rewards plausibility, not truth.</strong> OpenAI's own write-up on the topic puts it bluntly: "standard training and evaluation procedures reward guessing over acknowledging uncertainty." A model that says "I don't know" gets penalized on benchmarks that score only correct answers; a model that guesses confidently sometimes gets it right and is never worse off for bluffing.<sup>2</sup></li>
-        <li><strong>"Plausible citation" is a pattern the model learned very well.</strong> Legal reporters, volume numbers, court abbreviations, and pincites all follow strong regularities. Predicting tokens that fit that shape is <em>easy</em>. Predicting tokens that correspond to a real case that actually supports your argument is a completely different problem — one the model wasn't separately trained to solve.</li>
-        <li><strong>There is no default "I don't know" circuit — it has to be trained in.</strong> Anthropic's interpretability team has traced this inside Claude: the model has a default-on "can't answer" circuit that gets <em>suppressed</em> when a competing "known entity" feature fires. Ask about Michael Jordan, the known-entity feature fires, the refusal circuit shuts off, and the model answers. The researchers were able to induce hallucinations by artificially firing the known-entity feature for a made-up name — the model then confidently produced a biography for someone who doesn't exist. Hallucinations, on this view, are what happens when the known-entity signal misfires on something the model doesn't actually know.<sup>3</sup></li>
-        <li><strong>So what stops it?</strong> Post-training (RLHF, constitutional AI, etc.) teaches models to say "I don't know" more often, and tools like retrieval and citation-verification let the model check external sources before answering. Both help. Neither eliminates the underlying issue, because the underlying issue isn't a bug — it's the base mechanism showing through.</li>
-      </ul>
-
-      <p style="margin-top: 24px; font-size: 13px; color: var(--ink-faint);">
-        <sup>1</sup> <em>Mata v. Avianca, Inc.</em>, 678 F. Supp. 3d 443 (S.D.N.Y. 2023). Opinion and order on sanctions: <a href="https://law.justia.com/cases/federal/district-courts/new-york/nysdce/1:2022cv01461/575368/54/" style="color: var(--accent);">law.justia.com</a>. Background: <a href="https://en.wikipedia.org/wiki/Mata_v._Avianca,_Inc." style="color: var(--accent);">Wikipedia summary</a>.<br />
-        <sup>2</sup> OpenAI, <em>Why language models hallucinate</em> (Sept. 2025): <a href="https://openai.com/index/why-language-models-hallucinate/" style="color: var(--accent);">openai.com</a>.<br />
-        <sup>3</sup> Anthropic, <em>Tracing the thoughts of a large language model</em> (Mar. 2025): <a href="https://www.anthropic.com/research/tracing-thoughts-language-model" style="color: var(--accent);">anthropic.com</a>. Full paper, <em>On the Biology of a Large Language Model</em>: <a href="https://transformer-circuits.pub/2025/attribution-graphs/biology.html" style="color: var(--accent);">transformer-circuits.pub</a>. The "known entity" / default-refusal finding is one mechanism among several; the authors are explicit that it doesn't explain every hallucination.
-      </p>
-    </div>
-  </section>
-
-  <section class="chapter" id="chapter-context-limits">
-    <div class="eyebrow">Chapter 5</div>
-    <h2>Long documents aren't read evenly.</h2>
-    <p class="lede">
-      You might expect that if you paste a 200-page contract into an LLM, it reads the whole thing with equal attention. It doesn't. A Stanford-led team documented the pattern in 2023 — the now-famous <em>"lost in the middle"</em> effect — where models recall information noticeably better when it sits at the beginning or end of a long context than when it's buried somewhere in the middle.
-    </p>
-
-    <div class="demo">
-      <div class="chart-header">
-        <div class="chart-title">Recall accuracy by position in context · schematic after Liu et al. 2023</div>
-        <div class="chart-sub">the U-shape holds across many models, including long-context ones</div>
-      </div>
-
-      <div class="lim-chart-wrap">
-        <svg class="lim-chart" viewBox="0 0 130 62" preserveAspectRatio="xMidYMid meet" aria-label="Accuracy by position chart">
-          <!-- Grid lines at 25/50/75 accuracy -->
-          <line class="lim-grid-line" x1="22" y1="16.25" x2="126" y2="16.25" />
-          <line class="lim-grid-line" x1="22" y1="27.5"  x2="126" y2="27.5" />
-          <line class="lim-grid-line" x1="22" y1="38.75" x2="126" y2="38.75" />
-
-          <!-- Middle marker -->
-          <line class="lim-middle-marker" x1="74" y1="5" x2="74" y2="50" />
-
-          <!-- Fill under the curve (U-shape) -->
-          <path class="lim-fill" d="M 22,16.25 L 32.4,19.4 L 42.8,23.9 L 53.2,28.4 L 63.6,31.1 L 74,32.0 L 84.4,30.65 L 94.8,26.6 L 105.2,22.1 L 115.6,17.6 L 126,14.9 L 126,50 L 22,50 Z" />
-
-          <!-- The curve -->
-          <polyline class="lim-curve"
-            points="22,16.25 32.4,19.4 42.8,23.9 53.2,28.4 63.6,31.1 74,32.0 84.4,30.65 94.8,26.6 105.2,22.1 115.6,17.6 126,14.9" />
-
-          <!-- Data dots -->
-          <circle class="lim-dot" cx="22"    cy="16.25" r="0.9" />
-          <circle class="lim-dot" cx="32.4"  cy="19.4"  r="0.9" />
-          <circle class="lim-dot" cx="42.8"  cy="23.9"  r="0.9" />
-          <circle class="lim-dot" cx="53.2"  cy="28.4"  r="0.9" />
-          <circle class="lim-dot" cx="63.6"  cy="31.1"  r="0.9" />
-          <circle class="lim-dot" cx="74"    cy="32.0"  r="1.2" />
-          <circle class="lim-dot" cx="84.4"  cy="30.65" r="0.9" />
-          <circle class="lim-dot" cx="94.8"  cy="26.6"  r="0.9" />
-          <circle class="lim-dot" cx="105.2" cy="22.1"  r="0.9" />
-          <circle class="lim-dot" cx="115.6" cy="17.6"  r="0.9" />
-          <circle class="lim-dot" cx="126"   cy="14.9"  r="0.9" />
-
-          <!-- Y-axis -->
-          <line class="lim-axis-line" x1="22" y1="5" x2="22" y2="50" />
-          <text class="lim-label" x="20" y="5.8"  font-size="2.2" text-anchor="end">100%</text>
-          <text class="lim-label" x="20" y="16.8" font-size="2.2" text-anchor="end">75%</text>
-          <text class="lim-label" x="20" y="28.1" font-size="2.2" text-anchor="end">50%</text>
-          <text class="lim-label" x="20" y="39.3" font-size="2.2" text-anchor="end">25%</text>
-          <text class="lim-label" x="20" y="50.5" font-size="2.2" text-anchor="end">0%</text>
-
-          <!-- X-axis -->
-          <line class="lim-axis-line" x1="22" y1="50" x2="126" y2="50" />
-          <text class="lim-label" x="22"  y="54.5" font-size="2.2" text-anchor="middle">start</text>
-          <text class="lim-label" x="74"  y="54.5" font-size="2.2" text-anchor="middle">middle</text>
-          <text class="lim-label" x="126" y="54.5" font-size="2.2" text-anchor="middle">end</text>
-
-          <!-- Axis titles -->
-          <text class="lim-label" x="74"  y="60"   font-size="2.1" text-anchor="middle" style="letter-spacing: 0.1em; text-transform: uppercase;">position of answer in long context</text>
-          <text class="lim-label" x="6"   y="27.5" font-size="2.1" text-anchor="middle" transform="rotate(-90, 6, 27.5)" style="letter-spacing: 0.1em; text-transform: uppercase;">recall accuracy</text>
-
-          <!-- Middle annotation -->
-          <text class="lim-middle-label" x="74" y="9" font-size="2.3" text-anchor="middle">lowest here</text>
-        </svg>
-      </div>
-
-      <div class="lim-caption">
-        The x-axis is the position of a key piece of information placed inside a long document; the y-axis is how often the model finds it when asked. Accuracy sags in the middle — often by 20+ percentage points compared to the endpoints. Exact numbers vary by model and task; shape reproduces in Liu et al.'s Figure 5 across every model they tested.
-      </div>
-    </div>
-
-    <div class="annotations">
-      <p>A few things to pull out of this:</p>
-      <ul>
-        <li><strong>This isn't about running out of room.</strong> The effect shows up even in models explicitly trained for long contexts (100K+ tokens). It's not that the middle tokens aren't <em>there</em>; it's that the model doesn't attend to them as reliably. Position within the window matters independently of whether the window was exceeded.</li>
-        <li><strong>Why it happens (roughly):</strong> training data tends to have important information at the edges (introductions, conclusions, headlines, answers at the end of Q&amp;A), and attention mechanisms combined with positional encodings pick up on those priors. Models learn to weight the edges. It's less a bug than an inherited statistical habit.</li>
-        <li><strong>Prompting can claw a lot of it back.</strong> Anthropic ran needle-in-a-haystack tests on Claude 2.1 at its 200K-token window and found recall on buried facts was 27% by default — but a small prompt tweak (instructing the model to start its reply by quoting the most relevant sentence) jumped it to <strong>98%</strong>.<sup>2</sup> The signal was in there the whole time; the model needed to be told how to reach for it.</li>
-        <li><strong>Practical rule:</strong> when you're pasting a long document into a model, put the most important thing at the top (in the system/instructions) or as close as possible to the end (near the generation cursor). Middle-of-document is where recall quietly degrades and you won't notice unless you check.</li>
-      </ul>
-
-      <p style="margin-top: 24px; font-size: 13px; color: var(--ink-faint);">
-        <sup>1</sup> Liu et al., <em>Lost in the Middle: How Language Models Use Long Contexts</em> (TACL 2024; arXiv 2023): <a href="https://arxiv.org/abs/2307.03172" style="color: var(--accent);">arxiv.org/abs/2307.03172</a>. The chart above is a schematic of the paper's U-shape; for exact per-model numbers see Figure 5.<br />
-        <sup>2</sup> Anthropic, <em>Long context prompting for Claude 2.1</em>: <a href="https://www.anthropic.com/news/claude-2-1-prompting" style="color: var(--accent);">anthropic.com</a>.
-      </p>
-    </div>
-  </section>
-  <!-- END PART 1 -->
-
-  <!-- BEGIN PART 2: The inner workings of an LLM -->
-  <section class="part-header" id="part-2">
-    <div class="part-number">Part Two</div>
-    <h2 class="part-title">The inner workings of an LLM</h2>
-    <p class="part-intro">Inside the model, tokens become vectors and meaning becomes geometry. A look at what actually happens between the input the model reads and the output it returns.</p>
-  </section>
-
-  <section class="chapter part-opener" id="chapter-3">
-    <div class="eyebrow">Chapter 3</div>
+  <section class="chapter" id="chapter-3">
+    <div class="eyebrow">Chapter 2</div>
     <h2>Meaning lives in space</h2>
     <p class="lede">
       Once text is tokens and tokens are numbers, the model's next move is to turn each number into a <em>vector</em> — a long list of numbers that plants the token somewhere in a high-dimensional space. The beautiful part: the model learns these positions so that words with similar meanings end up close together. Below, 42 real English words embedded by GloVe into 50 dimensions, projected down to 2 so you can actually see them.
@@ -1725,7 +1636,7 @@
   </section>
 
   <section class="chapter" id="chapter-4">
-    <div class="eyebrow">Chapter 4</div>
+    <div class="eyebrow">Chapter 3</div>
     <h2>One word looking at another</h2>
     <p class="lede">
       If each token is a vector, the model still has to figure out which tokens should influence which. That's the job of <em>self-attention</em>: for every token in a sentence, the model computes how much to listen to every other token. Below is the real attention pattern from one head, in one layer, of a small open-source language model, reading a short sentence.
