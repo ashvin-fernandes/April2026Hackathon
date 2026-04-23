@@ -1333,16 +1333,12 @@
   <!-- BEGIN PART 1: LLMs are word prediction engines -->
   <section class="part-header" id="part-1">
     <div class="part-number">Part One</div>
+    <div class="eyebrow">Chapter 1</div>
     <h2 class="part-title">LLMs are "just" word prediction engines.</h2>
-    <p class="part-intro">Everything an LLM writes, it writes one token at a time, each drawn from a probability distribution. This part shows exactly what that loop looks like — and why it means there's no "answer" in the model's head waiting to come out.</p>
+    <p class="part-intro">Everything an LLM writes is chosen by picking a token from a ranked list.</p>
   </section>
 
   <section class="chapter part-opener" id="chapter-1">
-    <div class="eyebrow">Chapter 1</div>
-    <h2>AI doesn't "know" the next word. It guesses.</h2>
-    <p class="lede">
-      Every time an LLM writes, it's choosing from a ranked list of possible next pieces of text — called <em>tokens</em> — each with a probability. Here's what that looks like for one sentence.
-    </p>
   </section>
 
   <section class="demo">
@@ -1351,7 +1347,6 @@
 
     <div class="chart-header">
       <div class="chart-title">Top 10 next-token candidates</div>
-      <div class="chart-sub" id="chart-sub">out of ~100,000 possible tokens</div>
     </div>
 
     <div class="bars" id="bars"></div>
@@ -1377,19 +1372,19 @@
     <div class="explainer">
       <h2 id="explainer-title">Try the slider</h2>
       <p id="explainer-body">
-        Temperature reshapes the probabilities before the model samples. Low temperature sharpens toward the top choice; high temperature flattens the distribution so less likely tokens get a real chance. The ranking stays the same — only the spread changes.
+        Temperature is a setting that changes the distribution of what tokens are picked. High temperature means that the LLM has a higher chance of choosing a less likely token. Low temperature means it usually picks the most likely one.
       </p>
     </div>
   </section>
 
   <p class="footnote">
-    Probabilities shown are illustrative — hand-picked logits designed to resemble what a real LLM might predict for this sentence. The math the slider runs is real; the numbers it runs on are curated.
+    Probabilities here are an example, not from a real LLM. 
   </p>
 
   <section class="chapter-subsection" id="chapter-1b">
-    <h3>Now watch it happen, one token at a time</h3>
+    <h3>An example of token generation</h3>
     <p class="lede">
-      The bar chart above shows <em>one</em> step. To actually generate, the model picks a token, appends it to what it has seen, and runs the whole thing through again for the next token. And again. And again. Here's that loop, visible.
+      The chart above showed one step of an LLM generating text. That process is repeated multiple times until the LLM reaches a stop token.
     </p>
 
     <div class="demo">
@@ -1405,7 +1400,7 @@
 
       <div id="ar-bars" class="bars"></div>
 
-      <div class="ar-note" id="ar-note">Click play. Each step, the model looks at everything it has seen, picks one token, and appends it. The distribution on the bar chart will change completely every step — because the context grows by one word every step.</div>
+      <div class="ar-note" id="ar-note">Click step to generate a new token. In each step, the most likely next token changes depending on the existing tokens present (the context.) </div>
 
       <div class="ar-controls">
         <button id="ar-play" class="ar-btn ar-btn-primary">▶ Play</button>
@@ -1415,13 +1410,67 @@
     </div>
 
     <div class="annotations">
-      <p>The point: the model isn't <em>thinking</em> about an answer, then <em>writing</em> it. There's no plan, no intent, no "answer in its head" that it's trying to express. At every single step, all it's doing is <strong>predicting the next token given what it has seen so far</strong>. What looks like reasoning or personality is what happens when this loop runs on a model trained on trillions of tokens.</p>
-      <p><strong>An honest caveat:</strong> the word "just" is doing a lot of work in "just text prediction." Some researchers — Ilya Sutskever, for instance — argue that being <em>really good</em> at next-token prediction requires something that looks a lot like understanding, so "just" can undersell the emergent behavior. The <em>mechanism</em> is clearly this loop. Whether that's all there is to it is a real and open debate.</p>
+      An important understanding here is that LLMs do not think or reason before they write, the writing IS the reasoning.
+    </div>
+  </section>
+
+  <section class="chapter" id="chapter-think-by-writing">
+    <div class="eyebrow">Chapter 2</div>
+    <h2>LLMs think by writing.</h2>
+    <p class="lede">
+      An important understanding here is that LLMs do not think or reason before they write, the writing IS the reasoning. This means that forcing an LLM to use fewer words can hurt its performance, and conversely letting it write more can improve their performance.
+    </p>
+
+    <div class="demo">
+      <div class="prompt-label">The problem — same both times</div>
+      <div class="prompt">A lawyer's fee plus a filing fee totals $500. The lawyer's fee is $400 more than the filing fee. How much is the filing fee?</div>
+
+      <div class="ttb-split">
+        <div class="ttb-side ttb-fast">
+          <div class="ttb-side-head">
+            <div class="ttb-side-tag">Brief</div>
+            <div class="ttb-side-sub">"Answer in one sentence."</div>
+          </div>
+          <div class="ttb-response">$100.</div>
+          <div class="ttb-verdict">Wrong.</div>
+        </div>
+
+        <div class="ttb-side ttb-slow">
+          <div class="ttb-side-head">
+            <div class="ttb-side-tag">Step-by-step</div>
+            <div class="ttb-side-sub">"Think through this carefully."</div>
+          </div>
+          <div class="ttb-response">
+            Let F be the filing fee. Then the lawyer's fee is F&nbsp;+&nbsp;$400.<br />
+            Together, F&nbsp;+&nbsp;(F&nbsp;+&nbsp;$400)&nbsp;=&nbsp;$500.<br />
+            So 2F&nbsp;+&nbsp;$400&nbsp;=&nbsp;$500, which gives 2F&nbsp;=&nbsp;$100, so F&nbsp;=&nbsp;$50.<br />
+            <strong>The filing fee is $50.</strong>
+          </div>
+          <div class="ttb-verdict ttb-verdict-right">Correct.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotations">
+      <p>The model on the left isn't dumber. It's the same model. What changed is whether it had <em>tokens to think with</em>.</p>
+      <ul>
+        <li><strong>Each token takes a fixed amount of compute.</strong> The model runs one forward pass per token. That pass can do a lot — billions of parameters' worth — but it's a fixed amount. A problem that needs two multiplications and a subtraction to solve can't fit into one forward pass. It has to be spread across several, and each one needs a token to live on.</li>
+        <li><strong>Intermediate tokens are scratch paper.</strong> When the "step-by-step" version writes <em>"Let F be the filing fee,"</em> that isn't throat-clearing. It's the model creating a variable in its own output stream that later tokens can read and operate on. Take that scratch away and there is no place for "F" to live.</li>
+        <li><strong>This has a name: <em>chain-of-thought</em> prompting.</strong><sup>1</sup> The canonical finding: simply adding "let's think step by step" to a prompt improves accuracy on math and logic benchmarks dramatically — often by double-digit percentage points. The model didn't get smarter. It got room to work.</li>
+        <li><strong>Modern "reasoning models" bake this in.</strong> OpenAI's o1<sup>2</sup> and Claude's extended-thinking mode<sup>3</sup> produce long internal reasoning traces before the visible answer. Those tokens are sometimes hidden from you, but they are doing the arithmetic.</li>
+        <li><strong>When brief output is fine.</strong> Factual lookup or simple generation doesn't benefit from extra tokens. The "tokens = computation" effect only kicks in when the task genuinely needs multi-step work. Practical rule when you're prompting: <em>don't force brevity on a reasoning task</em>. Let the model think; if you need a short final answer, ask for a summary at the end.</li>
+      </ul>
+
+      <p style="margin-top: 24px; font-size: 13px; color: var(--ink-faint);">
+        <sup>1</sup> Wei et al., <em>Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</em> (NeurIPS 2022): <a href="https://arxiv.org/abs/2201.11903" style="color: var(--accent);">arxiv.org/abs/2201.11903</a>.<br />
+        <sup>2</sup> OpenAI, <em>Learning to reason with LLMs</em> (introduction of o1, Sept. 2024): <a href="https://openai.com/index/learning-to-reason-with-llms/" style="color: var(--accent);">openai.com</a>.<br />
+        <sup>3</sup> Anthropic, <em>Building with extended thinking</em> (Claude docs): <a href="https://platform.claude.com/docs/en/docs/build-with-claude/extended-thinking" style="color: var(--accent);">platform.claude.com</a>.
+      </p>
     </div>
   </section>
 
   <section class="chapter" id="chapter-2">
-    <div class="eyebrow">Chapter 2</div>
+    <div class="eyebrow">Chapter 3</div>
     <h2>Wait, what is a token?</h2>
     <p class="lede">
       We've been throwing the word "tokens" around. Time to stop. Before a model can read any text, that text gets chopped into small pieces called <em>tokens</em>, and every token becomes a number. Everything the model actually does, it does on numbers. Here's the round-trip for a simple legal question.
@@ -1503,7 +1552,7 @@
   </section>
 
   <section class="chapter" id="chapter-hallucinations">
-    <div class="eyebrow">Chapter 3</div>
+    <div class="eyebrow">Chapter 4</div>
     <h2>Hallucinations aren't bugs. They're the mechanism.</h2>
     <p class="lede">
       If the whole job is predicting a plausible next token (Chapter 1), what happens when plausible and true come apart? The model keeps predicting. It has no separate "do I actually know this?" check wired in by default — so when the training data doesn't contain the real answer, it confidently produces something that <em>looks</em> like one. In 2023, a New York lawyer learned this the expensive way.
@@ -1540,61 +1589,6 @@
         <sup>1</sup> <em>Mata v. Avianca, Inc.</em>, 678 F. Supp. 3d 443 (S.D.N.Y. 2023). Opinion and order on sanctions: <a href="https://law.justia.com/cases/federal/district-courts/new-york/nysdce/1:2022cv01461/575368/54/" style="color: var(--accent);">law.justia.com</a>. Background: <a href="https://en.wikipedia.org/wiki/Mata_v._Avianca,_Inc." style="color: var(--accent);">Wikipedia summary</a>.<br />
         <sup>2</sup> OpenAI, <em>Why language models hallucinate</em> (Sept. 2025): <a href="https://openai.com/index/why-language-models-hallucinate/" style="color: var(--accent);">openai.com</a>.<br />
         <sup>3</sup> Anthropic, <em>Tracing the thoughts of a large language model</em> (Mar. 2025): <a href="https://www.anthropic.com/research/tracing-thoughts-language-model" style="color: var(--accent);">anthropic.com</a>. Full paper, <em>On the Biology of a Large Language Model</em>: <a href="https://transformer-circuits.pub/2025/attribution-graphs/biology.html" style="color: var(--accent);">transformer-circuits.pub</a>. The "known entity" / default-refusal finding is one mechanism among several; the authors are explicit that it doesn't explain every hallucination.
-      </p>
-    </div>
-  </section>
-
-  <section class="chapter" id="chapter-think-by-writing">
-    <div class="eyebrow">Chapter 4</div>
-    <h2>LLMs think by writing.</h2>
-    <p class="lede">
-      A corollary of Chapter 1's one-token-at-a-time rule: an LLM can only do as much reasoning as it has tokens to do it in. There is no hidden scratchpad. Force a one-word answer on a problem that actually needs three steps, and the model can't fit three steps of work into one forward pass — there is literally no place to put them. Watch what that looks like.
-    </p>
-
-    <div class="demo">
-      <div class="prompt-label">The problem — same both times</div>
-      <div class="prompt">A lawyer's fee plus a filing fee totals $500. The lawyer's fee is $400 more than the filing fee. How much is the filing fee?</div>
-
-      <div class="ttb-split">
-        <div class="ttb-side ttb-fast">
-          <div class="ttb-side-head">
-            <div class="ttb-side-tag">Brief</div>
-            <div class="ttb-side-sub">"Answer in one sentence."</div>
-          </div>
-          <div class="ttb-response">$100.</div>
-          <div class="ttb-verdict">Wrong.</div>
-        </div>
-
-        <div class="ttb-side ttb-slow">
-          <div class="ttb-side-head">
-            <div class="ttb-side-tag">Step-by-step</div>
-            <div class="ttb-side-sub">"Think through this carefully."</div>
-          </div>
-          <div class="ttb-response">
-            Let F be the filing fee. Then the lawyer's fee is F&nbsp;+&nbsp;$400.<br />
-            Together, F&nbsp;+&nbsp;(F&nbsp;+&nbsp;$400)&nbsp;=&nbsp;$500.<br />
-            So 2F&nbsp;+&nbsp;$400&nbsp;=&nbsp;$500, which gives 2F&nbsp;=&nbsp;$100, so F&nbsp;=&nbsp;$50.<br />
-            <strong>The filing fee is $50.</strong>
-          </div>
-          <div class="ttb-verdict ttb-verdict-right">Correct.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="annotations">
-      <p>The model on the left isn't dumber. It's the same model. What changed is whether it had <em>tokens to think with</em>.</p>
-      <ul>
-        <li><strong>Each token takes a fixed amount of compute.</strong> The model runs one forward pass per token. That pass can do a lot — billions of parameters' worth — but it's a fixed amount. A problem that needs two multiplications and a subtraction to solve can't fit into one forward pass. It has to be spread across several, and each one needs a token to live on.</li>
-        <li><strong>Intermediate tokens are scratch paper.</strong> When the "step-by-step" version writes <em>"Let F be the filing fee,"</em> that isn't throat-clearing. It's the model creating a variable in its own output stream that later tokens can read and operate on. Take that scratch away and there is no place for "F" to live.</li>
-        <li><strong>This has a name: <em>chain-of-thought</em> prompting.</strong><sup>1</sup> The canonical finding: simply adding "let's think step by step" to a prompt improves accuracy on math and logic benchmarks dramatically — often by double-digit percentage points. The model didn't get smarter. It got room to work.</li>
-        <li><strong>Modern "reasoning models" bake this in.</strong> OpenAI's o1<sup>2</sup> and Claude's extended-thinking mode<sup>3</sup> produce long internal reasoning traces before the visible answer. Those tokens are sometimes hidden from you, but they are doing the arithmetic.</li>
-        <li><strong>When brief output is fine.</strong> Factual lookup or simple generation doesn't benefit from extra tokens. The "tokens = computation" effect only kicks in when the task genuinely needs multi-step work. Practical rule when you're prompting: <em>don't force brevity on a reasoning task</em>. Let the model think; if you need a short final answer, ask for a summary at the end.</li>
-      </ul>
-
-      <p style="margin-top: 24px; font-size: 13px; color: var(--ink-faint);">
-        <sup>1</sup> Wei et al., <em>Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</em> (NeurIPS 2022): <a href="https://arxiv.org/abs/2201.11903" style="color: var(--accent);">arxiv.org/abs/2201.11903</a>.<br />
-        <sup>2</sup> OpenAI, <em>Learning to reason with LLMs</em> (introduction of o1, Sept. 2024): <a href="https://openai.com/index/learning-to-reason-with-llms/" style="color: var(--accent);">openai.com</a>.<br />
-        <sup>3</sup> Anthropic, <em>Building with extended thinking</em> (Claude docs): <a href="https://platform.claude.com/docs/en/docs/build-with-claude/extended-thinking" style="color: var(--accent);">platform.claude.com</a>.
       </p>
     </div>
   </section>
