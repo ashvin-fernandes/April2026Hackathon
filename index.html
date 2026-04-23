@@ -993,6 +993,79 @@
     line-height: 1.55;
   }
 
+  /* --- Chapter 4 (Part 1): Think-by-writing side-by-side --- */
+
+  .ttb-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 28px;
+  }
+
+  .ttb-side {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+    background: var(--bg-subtle);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  .ttb-side-head {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--line);
+    margin-bottom: 4px;
+  }
+
+  .ttb-side-tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .ttb-fast .ttb-side-tag { color: var(--ink-soft); }
+  .ttb-slow .ttb-side-tag { color: var(--accent); }
+
+  .ttb-side-sub {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    font-style: italic;
+    color: var(--ink-faint);
+  }
+
+  .ttb-response {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink);
+    flex: 1;
+  }
+
+  .ttb-fast .ttb-response {
+    color: var(--ink-soft);
+  }
+
+  .ttb-verdict {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-top: auto;
+  }
+
+  .ttb-fast .ttb-verdict::before { content: "✗ "; }
+  .ttb-slow .ttb-verdict::before { content: "✓ "; }
+
+  .ttb-verdict-right {
+    color: var(--accent);
+  }
+
   /* --- Chapter 1 autoregressive demo --- */
 
   .chapter-subsection {
@@ -1168,6 +1241,8 @@
     /* Text on mobile uses the same user-unit font-size set via SVG attribute. */
     .chapter-subsection { margin-top: 48px; padding-top: 32px; }
     .chapter-subsection h3 { font-size: 22px; }
+    .ttb-split { grid-template-columns: 1fr; gap: 14px; }
+    .ttb-side { padding: 16px; }
     .ar-text { font-size: 15px; padding: 14px 16px; }
     .ar-btn { padding: 8px 14px; font-size: 13px; }
   }
@@ -1402,6 +1477,61 @@
         <sup>1</sup> <em>Mata v. Avianca, Inc.</em>, 678 F. Supp. 3d 443 (S.D.N.Y. 2023). Opinion and order on sanctions: <a href="https://law.justia.com/cases/federal/district-courts/new-york/nysdce/1:2022cv01461/575368/54/" style="color: var(--accent);">law.justia.com</a>. Background: <a href="https://en.wikipedia.org/wiki/Mata_v._Avianca,_Inc." style="color: var(--accent);">Wikipedia summary</a>.<br />
         <sup>2</sup> OpenAI, <em>Why language models hallucinate</em> (Sept. 2025): <a href="https://openai.com/index/why-language-models-hallucinate/" style="color: var(--accent);">openai.com</a>.<br />
         <sup>3</sup> Anthropic, <em>Tracing the thoughts of a large language model</em> (Mar. 2025): <a href="https://www.anthropic.com/research/tracing-thoughts-language-model" style="color: var(--accent);">anthropic.com</a>. Full paper, <em>On the Biology of a Large Language Model</em>: <a href="https://transformer-circuits.pub/2025/attribution-graphs/biology.html" style="color: var(--accent);">transformer-circuits.pub</a>. The "known entity" / default-refusal finding is one mechanism among several; the authors are explicit that it doesn't explain every hallucination.
+      </p>
+    </div>
+  </section>
+
+  <section class="chapter" id="chapter-think-by-writing">
+    <div class="eyebrow">Chapter 4</div>
+    <h2>LLMs think by writing.</h2>
+    <p class="lede">
+      A corollary of Chapter 1's one-token-at-a-time rule: an LLM can only do as much reasoning as it has tokens to do it in. There is no hidden scratchpad. Force a one-word answer on a problem that actually needs three steps, and the model can't fit three steps of work into one forward pass — there is literally no place to put them. Watch what that looks like.
+    </p>
+
+    <div class="demo">
+      <div class="prompt-label">The problem — same both times</div>
+      <div class="prompt">A lawyer's fee plus a filing fee totals $500. The lawyer's fee is $400 more than the filing fee. How much is the filing fee?</div>
+
+      <div class="ttb-split">
+        <div class="ttb-side ttb-fast">
+          <div class="ttb-side-head">
+            <div class="ttb-side-tag">Brief</div>
+            <div class="ttb-side-sub">"Answer in one sentence."</div>
+          </div>
+          <div class="ttb-response">$100.</div>
+          <div class="ttb-verdict">Wrong.</div>
+        </div>
+
+        <div class="ttb-side ttb-slow">
+          <div class="ttb-side-head">
+            <div class="ttb-side-tag">Step-by-step</div>
+            <div class="ttb-side-sub">"Think through this carefully."</div>
+          </div>
+          <div class="ttb-response">
+            Let F be the filing fee. Then the lawyer's fee is F&nbsp;+&nbsp;$400.<br />
+            Together, F&nbsp;+&nbsp;(F&nbsp;+&nbsp;$400)&nbsp;=&nbsp;$500.<br />
+            So 2F&nbsp;+&nbsp;$400&nbsp;=&nbsp;$500, which gives 2F&nbsp;=&nbsp;$100, so F&nbsp;=&nbsp;$50.<br />
+            <strong>The filing fee is $50.</strong>
+          </div>
+          <div class="ttb-verdict ttb-verdict-right">Correct.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotations">
+      <p>The model on the left isn't dumber. It's the same model. What changed is whether it had <em>tokens to think with</em>.</p>
+      <ul>
+        <li><strong>Each token takes a fixed amount of compute.</strong> The model runs one forward pass per token. That pass can do a lot — billions of parameters' worth — but it's a fixed amount. A problem that needs two multiplications and a subtraction to solve can't fit into one forward pass. It has to be spread across several, and each one needs a token to live on.</li>
+        <li><strong>Intermediate tokens are scratch paper.</strong> When the "step-by-step" version writes <em>"Let F be the filing fee,"</em> that isn't throat-clearing. It's the model creating a variable in its own output stream that later tokens can read and operate on. Take that scratch away and there is no place for "F" to live.</li>
+        <li><strong>This has a name: <em>chain-of-thought</em> prompting.</strong><sup>1</sup> The canonical finding: simply adding "let's think step by step" to a prompt improves accuracy on math and logic benchmarks dramatically — often by double-digit percentage points. The model didn't get smarter. It got room to work.</li>
+        <li><strong>Modern "reasoning models" bake this in.</strong> OpenAI's o1<sup>2</sup> and Claude's extended-thinking mode<sup>3</sup> produce long internal reasoning traces before the visible answer. Those tokens are sometimes hidden from you, but they are doing the arithmetic.</li>
+        <li><strong>When brief output is fine.</strong> Factual lookup or simple generation doesn't benefit from extra tokens. The "tokens = computation" effect only kicks in when the task genuinely needs multi-step work. Practical rule when you're prompting: <em>don't force brevity on a reasoning task</em>. Let the model think; if you need a short final answer, ask for a summary at the end.</li>
+      </ul>
+
+      <p style="margin-top: 24px; font-size: 13px; color: var(--ink-faint);">
+        <sup>1</sup> Wei et al., <em>Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</em> (NeurIPS 2022): <a href="https://arxiv.org/abs/2201.11903" style="color: var(--accent);">arxiv.org/abs/2201.11903</a>.<br />
+        <sup>2</sup> OpenAI, <em>Learning to reason with LLMs</em> (introduction of o1, Sept. 2024): <a href="https://openai.com/index/learning-to-reason-with-llms/" style="color: var(--accent);">openai.com</a>.<br />
+        <sup>3</sup> Anthropic, <em>Building with extended thinking</em> (Claude docs): <a href="https://platform.claude.com/docs/en/docs/build-with-claude/extended-thinking" style="color: var(--accent);">platform.claude.com</a>.
       </p>
     </div>
   </section>
