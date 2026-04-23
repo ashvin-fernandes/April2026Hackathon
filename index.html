@@ -710,11 +710,11 @@
     stroke-dasharray: 0.06 0.06;
   }
 
-  .point {
+  .point-dot,
+  .point-label {
     opacity: 0;
     animation: point-fade-in 480ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
     animation-delay: var(--delay, 0ms);
-    cursor: default;
     transition: opacity 180ms ease;
   }
 
@@ -723,20 +723,28 @@
     to { opacity: 1; }
   }
 
-  .point[data-cat="legal"]     { color: var(--cat-legal); }
-  .point[data-cat="colors"]    { color: var(--cat-colors); }
-  .point[data-cat="animals"]   { color: var(--cat-animals); }
-  .point[data-cat="numbers"]   { color: var(--cat-numbers); }
-  .point[data-cat="countries"] { color: var(--cat-countries); }
-  .point[data-cat="time"]      { color: var(--cat-time); }
-  .point[data-cat="emotions"]  { color: var(--cat-emotions); }
+  .point-dot[data-cat="legal"]     { fill: var(--cat-legal); }
+  .point-dot[data-cat="colors"]    { fill: var(--cat-colors); }
+  .point-dot[data-cat="animals"]   { fill: var(--cat-animals); }
+  .point-dot[data-cat="numbers"]   { fill: var(--cat-numbers); }
+  .point-dot[data-cat="countries"] { fill: var(--cat-countries); }
+  .point-dot[data-cat="time"]      { fill: var(--cat-time); }
+  .point-dot[data-cat="emotions"]  { fill: var(--cat-emotions); }
 
-  .point circle {
-    fill: currentColor;
-    transition: r 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  .point-label[data-cat="legal"]     { color: var(--cat-legal); }
+  .point-label[data-cat="colors"]    { color: var(--cat-colors); }
+  .point-label[data-cat="animals"]   { color: var(--cat-animals); }
+  .point-label[data-cat="numbers"]   { color: var(--cat-numbers); }
+  .point-label[data-cat="countries"] { color: var(--cat-countries); }
+  .point-label[data-cat="time"]      { color: var(--cat-time); }
+  .point-label[data-cat="emotions"]  { color: var(--cat-emotions); }
+
+  .point-dot {
+    cursor: default;
+    transition: r 180ms cubic-bezier(0.4, 0, 0.2, 1), opacity 180ms ease;
   }
 
-  .point text {
+  .point-label {
     fill: var(--ink);
     paint-order: stroke fill;
     stroke: var(--bg-subtle);
@@ -744,35 +752,38 @@
     stroke-linejoin: round;
     pointer-events: none;
     dominant-baseline: middle;
-    transition: font-weight 180ms ease, fill 180ms ease;
+    transition: font-weight 180ms ease, fill 180ms ease, opacity 180ms ease;
   }
 
-  /* Hover: dim other points, emphasize the hovered one */
-  .embedding-svg:hover .point {
+  /* Hover: when a dot is hovered, dim all non-matching dots+labels.
+     The matching pair (linked by data-word) keeps full opacity. */
+  .embedding-svg.has-hover .point-dot,
+  .embedding-svg.has-hover .point-label {
     opacity: 0.22;
   }
 
-  .embedding-svg .point:hover {
-    opacity: 1;
+  .embedding-svg .point-dot.is-hovered,
+  .embedding-svg .point-label.is-hovered {
+    opacity: 1 !important;
   }
 
-  .point:hover circle {
+  .point-dot.is-hovered {
     r: 0.16;
   }
 
-  .point:hover text {
+  .point-label.is-hovered {
     font-weight: 700;
     fill: currentColor;
   }
 
-  /* Legend hover: filter by category */
-  .embedding-demo[data-focus="legal"]     .point:not([data-cat="legal"]),
-  .embedding-demo[data-focus="colors"]    .point:not([data-cat="colors"]),
-  .embedding-demo[data-focus="animals"]   .point:not([data-cat="animals"]),
-  .embedding-demo[data-focus="numbers"]   .point:not([data-cat="numbers"]),
-  .embedding-demo[data-focus="countries"] .point:not([data-cat="countries"]),
-  .embedding-demo[data-focus="time"]      .point:not([data-cat="time"]),
-  .embedding-demo[data-focus="emotions"]  .point:not([data-cat="emotions"]) {
+  /* Legend hover: filter by category (both dots and labels). */
+  .embedding-demo[data-focus="legal"]     :is(.point-dot, .point-label):not([data-cat="legal"]),
+  .embedding-demo[data-focus="colors"]    :is(.point-dot, .point-label):not([data-cat="colors"]),
+  .embedding-demo[data-focus="animals"]   :is(.point-dot, .point-label):not([data-cat="animals"]),
+  .embedding-demo[data-focus="numbers"]   :is(.point-dot, .point-label):not([data-cat="numbers"]),
+  .embedding-demo[data-focus="countries"] :is(.point-dot, .point-label):not([data-cat="countries"]),
+  .embedding-demo[data-focus="time"]      :is(.point-dot, .point-label):not([data-cat="time"]),
+  .embedding-demo[data-focus="emotions"]  :is(.point-dot, .point-label):not([data-cat="emotions"]) {
     opacity: 0.15;
   }
 
@@ -1167,29 +1178,95 @@
       svg.appendChild(line);
     }
 
-    // Sort so tokens don't overlap label-text too much at random; render in
-    // reading order so later hovers stack above earlier ones.
+    // Per-category centroid — labels get pushed outward from it so they
+    // spread across each cluster instead of piling up in the center.
+    const centroids = {};
+    for (const d of EMBEDDING_DATA) {
+      if (!centroids[d.cat]) centroids[d.cat] = { sx: 0, sy: 0, n: 0 };
+      centroids[d.cat].sx += d.x;
+      centroids[d.cat].sy += d.y;
+      centroids[d.cat].n += 1;
+    }
+    for (const c of Object.values(centroids)) {
+      c.x = c.sx / c.n;
+      c.y = c.sy / c.n;
+    }
+
+    // Two layers: all dots first, then all labels. This keeps every label
+    // visually on top of every dot, so no later-drawn dot can obscure an
+    // earlier-drawn word.
+    const dotsLayer = document.createElementNS(NS, 'g');
+    dotsLayer.setAttribute('class', 'dots-layer');
+    svg.appendChild(dotsLayer);
+
+    const labelsLayer = document.createElementNS(NS, 'g');
+    labelsLayer.setAttribute('class', 'labels-layer');
+    svg.appendChild(labelsLayer);
+
+    const OFFSET = 0.22;
+
     EMBEDDING_DATA.forEach((d, i) => {
-      const g = document.createElementNS(NS, 'g');
-      g.setAttribute('class', 'point');
-      g.setAttribute('data-cat', d.cat);
-      g.setAttribute('data-word', d.word);
-      g.style.setProperty('--delay', (300 + i * 22) + 'ms');
+      const delay = (300 + i * 22) + 'ms';
 
       const c = document.createElementNS(NS, 'circle');
+      c.setAttribute('class', 'point-dot');
       c.setAttribute('cx', d.x);
-      c.setAttribute('cy', -d.y); // flip: positive y is "up" visually
+      c.setAttribute('cy', -d.y);
       c.setAttribute('r', '0.1');
-      g.appendChild(c);
+      c.setAttribute('data-cat', d.cat);
+      c.setAttribute('data-word', d.word);
+      c.style.setProperty('--delay', delay);
+      dotsLayer.appendChild(c);
+
+      // Label offset: direction away from cluster centroid, at a fixed
+      // distance. Ties (point near centroid) fall back to a rightward
+      // offset so we always have a well-defined direction.
+      const cen = centroids[d.cat];
+      let dx = d.x - cen.x;
+      let dy = d.y - cen.y;
+      const len = Math.hypot(dx, dy);
+      if (len > 0.02) {
+        dx = (dx / len) * OFFSET;
+        dy = (dy / len) * OFFSET;
+      } else {
+        dx = OFFSET;
+        dy = 0;
+      }
 
       const t = document.createElementNS(NS, 'text');
-      t.setAttribute('x', d.x + 0.14);
-      t.setAttribute('y', -d.y);
+      t.setAttribute('class', 'point-label');
+      t.setAttribute('x', d.x + dx);
+      t.setAttribute('y', -(d.y + dy));
       t.setAttribute('font-size', '0.17');
+      t.setAttribute('data-cat', d.cat);
+      t.setAttribute('data-word', d.word);
+      t.style.setProperty('--delay', delay);
+      // Anchor label by its nearest edge so it grows away from the dot.
+      if (dx < -0.04) t.setAttribute('text-anchor', 'end');
+      else if (dx > 0.04) t.setAttribute('text-anchor', 'start');
+      else t.setAttribute('text-anchor', 'middle');
       t.textContent = d.word;
-      g.appendChild(t);
+      labelsLayer.appendChild(t);
+    });
 
-      svg.appendChild(g);
+    // Hover linking: since dots and labels live in separate layers, we
+    // toggle matching classes in JS based on the hovered dot's data-word.
+    function setHover(word, on) {
+      const dot = dotsLayer.querySelector(`.point-dot[data-word="${word}"]`);
+      const label = labelsLayer.querySelector(`.point-label[data-word="${word}"]`);
+      if (dot) dot.classList.toggle('is-hovered', on);
+      if (label) label.classList.toggle('is-hovered', on);
+      svg.classList.toggle('has-hover', on);
+    }
+
+    dotsLayer.addEventListener('mouseover', (e) => {
+      const dot = e.target.closest('.point-dot');
+      if (dot) setHover(dot.getAttribute('data-word'), true);
+    });
+
+    dotsLayer.addEventListener('mouseout', (e) => {
+      const dot = e.target.closest('.point-dot');
+      if (dot) setHover(dot.getAttribute('data-word'), false);
     });
   })();
 
