@@ -1066,77 +1066,6 @@
     color: var(--accent);
   }
 
-  /* --- Chapter 5 (Part 1): Lost-in-the-middle chart --- */
-
-  .lim-chart-wrap {
-    width: 100%;
-    padding: 22px 20px 14px;
-    background: var(--bg-subtle);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    margin-top: 24px;
-  }
-
-  .lim-chart {
-    width: 100%;
-    height: auto;
-    display: block;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-  }
-
-  .lim-axis-line {
-    stroke: var(--line);
-    stroke-width: 0.3;
-  }
-
-  .lim-grid-line {
-    stroke: var(--line);
-    stroke-width: 0.2;
-    stroke-dasharray: 0.8 0.8;
-  }
-
-  .lim-curve {
-    fill: none;
-    stroke: var(--accent);
-    stroke-width: 0.8;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-  }
-
-  .lim-fill {
-    fill: var(--accent);
-    fill-opacity: 0.08;
-    stroke: none;
-  }
-
-  .lim-dot {
-    fill: var(--accent);
-    stroke: var(--bg-subtle);
-    stroke-width: 0.4;
-  }
-
-  .lim-middle-marker {
-    stroke: var(--highlight-end);
-    stroke-width: 0.4;
-    stroke-dasharray: 0.6 0.6;
-  }
-
-  .lim-label {
-    fill: var(--ink-faint);
-  }
-
-  .lim-middle-label {
-    fill: var(--highlight-start);
-    font-weight: 600;
-  }
-
-  .lim-caption {
-    margin-top: 16px;
-    font-size: 13px;
-    color: var(--ink-faint);
-    line-height: 1.55;
-  }
-
   /* --- Chapter 1 autoregressive demo --- */
 
   .chapter-subsection {
@@ -1522,7 +1451,7 @@
     <p class="part-intro">Inside the model, tokens become vectors and meaning becomes geometry. A look at what actually happens between the input the model reads and the output it returns.</p>
   </section>
 
-  <section class="chapter part-opener" id="chapter-2">
+  <section class="chapter part-opener" id="chapter-tokens">
     <div class="eyebrow">Chapter 1</div>
     <h2>Wait, what is a token?</h2>
     <p class="lede">
@@ -1604,7 +1533,7 @@
     </div>
   </section>
 
-  <section class="chapter" id="chapter-3">
+  <section class="chapter" id="chapter-embeddings">
     <div class="eyebrow">Chapter 2</div>
     <h2>Meaning lives in space</h2>
     <p class="lede">
@@ -1635,7 +1564,7 @@
     </div>
   </section>
 
-  <section class="chapter" id="chapter-4">
+  <section class="chapter" id="chapter-attention">
     <div class="eyebrow">Chapter 3</div>
     <h2>One word looking at another</h2>
     <p class="lede">
