@@ -1455,7 +1455,7 @@
       <ul>
         <li><strong>Math is normally trivial for computers,</strong> but LLMs can run into issues. For simple math problems using common numbers, LLMs will usually get the answer right. Those problems are part of the LLMs' training data, so the model will be strongly pointed towards the right answer. </li>
         <li><strong>LLMs are designed to give answers that look correct.</strong> For uncommon equations like the one above, the LLM is just doing its best to get to an answer that seems plausible. This is what's scary about AI hallucinations. The answers they give seem correct, because they've been heavily trained to look correct! </li>
-        <li><strong> More tokens allow for more reasoning.</strong>You may have seen some LLMs with a <em>thinking</em> section before they give out their final output. As seen above, giving the LLM additional tokens to reason with can improve performance. Those thinking tokens are not a special internal part of the AI, they're exactly the same as the tokens in the final output. Other models may still be doing this "thinking" but not showing it to you in the output.</li>
+        <li><strong>More tokens allow for more reasoning.</strong> You may have seen some LLMs with a <em>thinking</em> section before they give out their final output. As seen above, giving the LLM additional tokens to reason with can improve performance. Those thinking tokens are not a special internal part of the AI, they're exactly the same as the tokens in the final output. Other models may still be doing this "thinking" but not showing it to you in the output.</li>
         <li>Current AIs often solve problems like these by calling a tool. When I tried the above equation on Opus 4.7, it chose to build a quick python script to get the answer rather than trying to reason it out.</li>
       </ul>
     </div>
@@ -1644,7 +1644,7 @@
         <li><strong>"Jurisprudence" splits into multiple tokens.</strong> Tokens are not always discrete words, uncommon words tend to use multiple tokens. There can also be differences in token usage depending on capitalization. In the input (lowercase, with a leading space) it becomes three tokens: <code>·juris</code>, <code>pr</code>, <code>udence</code>. In the output (capital J, no leading space, sentence-start) it becomes <em>four</em>: <code>Jur</code>, <code>is</code>, <code>pr</code>, <code>udence</code>. For simplicity, we'll be using mostly single word tokens.</li>
         <li><strong>Tokens reuse numeric IDs across contexts.</strong> <code>pr</code> is token <code>652</code> both times it appears. <code>udence</code> is <code>74193</code>. <code>·philosophy</code> (with leading space) is <code>19675</code>. These assignments are made when the LLM is trained, they don't change during usage.</li>
         <li><strong>The model never actually sees English.</strong> Only numbers. Whatever it "knows" about grammar, meaning, or legal theory is computed from operations on these token IDs.</li>
-        <li><strong>Tokens determine cost.</strong> The amount that you're charged for using an LLM is the based on both the amount of tokens you input + the amount of tokens returned.</li>
+        <li><strong>Tokens determine cost.</strong> The amount that you're charged for using an LLM is based on both the number of tokens you input + the number of tokens returned.</li>
       </ul>
     </div>
   </section>
@@ -1667,7 +1667,7 @@
         <svg class="embedding-svg" id="embedding-svg" viewBox="-3.6 -3.6 7.2 7.2" preserveAspectRatio="xMidYMid meet"></svg>
       </div>
       <div class="embedding-caption">
-        Each dot is a token. Hover oveer any token to focus; hover over a category label to filter.
+        Each dot is a token. Hover over any token to focus; hover over a category label to filter.
       </div>
     </div>
 
@@ -1675,7 +1675,7 @@
       <p>A few things worth noticing:</p>
       <ul>
         <li><strong>Categories form visible clusters.</strong> Words that are related to each other in meaning appear near each other. Nothing in the training told the LLM that these were animals or colours, it read billions of words of text and through pattern matching, learned that some words belong near others.</li>
-        <li><strong>This is a flattening of real embeddings.</strong> Real embeddings can be over fifty dimensions, this display is just a reprsentation.</li>
+        <li><strong>This is a flattening of real embeddings.</strong> Real embeddings can be over fifty dimensions, this display is just a representation.</li>
         <li><strong>There is no meaning to the axes.</strong> A token being towards the top or bottom has no meaning, except in relation to the other tokens.</li>
       </ul>
     </div>
