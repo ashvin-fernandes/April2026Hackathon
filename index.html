@@ -736,6 +736,160 @@
     line-height: 1.55;
   }
 
+  /* --- Part 2 Ch 2 subsection: "charge" disambiguation across contexts --- */
+
+  .charge-demo {
+    margin-top: 24px;
+    display: grid;
+    gap: 28px;
+  }
+
+  .charge-panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 24px;
+  }
+
+  .charge-panel-head {
+    margin-bottom: 18px;
+  }
+
+  .charge-panel-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .charge-panel-sub {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--ink-faint);
+    line-height: 1.5;
+  }
+
+  .charge-panel-sub code {
+    font-size: 11.5px;
+    padding: 1px 5px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+  }
+
+  .charge-strips {
+    display: grid;
+    gap: 10px;
+  }
+
+  .charge-strip {
+    --charge-color: var(--ink-faint);
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    border-left: 3px solid var(--charge-color);
+    border-radius: 0 4px 4px 0;
+    background: color-mix(in srgb, var(--charge-color) 5%, transparent);
+  }
+
+  .charge-strip[data-sense="legal"]      { --charge-color: var(--cat-legal); }
+  .charge-strip[data-sense="financial"]  { --charge-color: var(--cat-time); }
+  .charge-strip[data-sense="electrical"] { --charge-color: var(--cat-animals); }
+  .charge-strip[data-sense="physical"]   { --charge-color: var(--cat-colors); }
+
+  .charge-strip-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--charge-color);
+  }
+
+  .charge-strip-sentence {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  .ctok {
+    display: inline-block;
+    padding: 3px 6px;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--charge-color) calc(var(--tok-w, 0) * 100%), transparent);
+    transition: background 240ms ease;
+  }
+
+  .ctok--special {
+    font-size: 11px;
+    opacity: 0.4;
+    padding: 3px 4px;
+    background: transparent;
+  }
+
+  .ctok--query {
+    outline: 1.5px solid var(--charge-color);
+    outline-offset: -1.5px;
+    font-weight: 600;
+    background: transparent;
+  }
+
+  .charge-vectors-wrap {
+    position: relative;
+    aspect-ratio: 5 / 4;
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .charge-vectors-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .charge-vec-dot--static {
+    fill: var(--ink-faint);
+  }
+
+  .charge-vec-dot[data-sense="legal"]      { fill: var(--cat-legal); }
+  .charge-vec-dot[data-sense="financial"]  { fill: var(--cat-time); }
+  .charge-vec-dot[data-sense="electrical"] { fill: var(--cat-animals); }
+  .charge-vec-dot[data-sense="physical"]   { fill: var(--cat-colors); }
+
+  .charge-vec-arrow {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 0.04;
+    stroke-dasharray: 0.18 0.18;
+    opacity: 0.65;
+  }
+
+  .charge-vec-label {
+    font-family: inherit;
+    font-size: 0.55px;
+    font-weight: 500;
+    fill: var(--ink);
+    pointer-events: none;
+  }
+
+  .charge-vec-label--static {
+    fill: var(--ink-faint);
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  .charge-vectors-caption {
+    margin-top: 14px;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    line-height: 1.55;
+    text-align: center;
+  }
+
   /* --- Chapter 4: Attention heatmap --- */
 
   .attention-demo {
@@ -1130,6 +1284,13 @@
     /* Text on mobile uses the same user-unit font-size set via SVG attribute. */
     .chapter-subsection { margin-top: 48px; padding-top: 32px; }
     .chapter-subsection h3 { font-size: 22px; }
+    .charge-demo { gap: 20px; }
+    .charge-panel { padding: 18px 16px; }
+    .charge-panel-title { font-size: 14px; }
+    .charge-panel-sub { font-size: 11px; }
+    .charge-strip { grid-template-columns: 1fr; gap: 6px; padding: 10px 12px; }
+    .charge-strip-sentence { font-size: 13px; }
+    .charge-vectors-wrap { max-width: 100%; }
     .ttb-split { grid-template-columns: 1fr; gap: 14px; }
     .ttb-side { padding: 16px; }
     .ar-text { font-size: 15px; padding: 14px 16px; }
@@ -1413,6 +1574,50 @@
         <li><strong>You're looking at a shadow.</strong> The real embedding is 50 directions at once. PCA projects that down to 2, which loses most of the information (the 2D plot keeps only <strong>~34%</strong> of the original variance). Words that look close in this picture <em>might</em> be close in the real space, but not always. We'll add a "true nearest-neighbor" view next.</li>
         <li><strong>The axes don't mean anything.</strong> Unlike a normal chart, "up" and "right" aren't defined concepts. PCA just picks the two directions where the words spread out the most. A different word list would produce different axes.</li>
         <li><strong>This is what the "meaning" layer of the model <em>is</em>.</strong> Every operation downstream — attention, prediction, the whole transformer — runs on vectors like these. Understand this picture and you have the shape of everything the model does with meaning.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="chapter-subsection" id="chapter-embeddings-context">
+    <h3>But in context, <em>charge</em> isn't one thing</h3>
+    <p class="lede">
+      The map above is static &mdash; <em>charge</em> sits at one point in that space, always. But in real sentences, <em>charge</em> could be a legal charge, a credit-card charge, an electrical charge, or a cavalry charge, and the sentence around it is what decides. Turning that context into a different vector is the job of <em>attention</em> &mdash; the subject of the next chapter. Here's what it looks like, on real weights, for four sentences.
+    </p>
+
+    <div class="charge-demo">
+      <div class="charge-panel">
+        <div class="charge-panel-head">
+          <div class="charge-panel-title">Where does <em>charge</em> look in each sentence?</div>
+          <div class="charge-panel-sub">
+            attention from <code>charge</code> to each content word &middot; layer 1 of 6 &middot; averaged across 12 heads
+          </div>
+        </div>
+        <div class="charge-strips" id="charge-strips"></div>
+      </div>
+
+      <div class="charge-panel">
+        <div class="charge-panel-head">
+          <div class="charge-panel-title">Where does <em>charge</em> land after the full transformer?</div>
+          <div class="charge-panel-sub">
+            the vector for <code>charge</code> after all 6 layers &middot; 768 dimensions projected to 2 via PCA (<span id="charge-variance">~74%</span> variance preserved)
+          </div>
+        </div>
+        <div class="charge-vectors-wrap">
+          <svg class="charge-vectors-svg" id="charge-vectors-svg" preserveAspectRatio="xMidYMid meet" aria-label="Scatter plot of charge's vector in five conditions"></svg>
+        </div>
+        <div class="charge-vectors-caption">
+          Gray dot: <em>charge</em>'s static embedding &mdash; the fixed position from the map above, before any layer touches it. Colored dots: where <em>charge</em>'s vector lands after the transformer, in each sentence.
+        </div>
+      </div>
+    </div>
+
+    <div class="annotations">
+      <p>Reading these pictures together:</p>
+      <ul>
+        <li><strong>Same word, different attention, different neighborhood.</strong> In each sentence, <code>charge</code>'s attention spreads across the content words and concentrates on the ones that disambiguate its meaning &mdash; <em>prosecutor</em> and <em>court</em> in the legal sentence, <em>credit</em> and <em>statement</em> in the financial one, <em>built</em> and <em>sparked</em> in the electrical, <em>cavalry</em> and <em>broke</em> in the physical. Nothing in training told the model these words go together. It learned the groupings from reading a lot of text.</li>
+        <li><strong>One starting point, four destinations.</strong> The gray dot is <em>charge</em>'s static embedding &mdash; the fixed input for all four sentences, before any layer processes it. After all six transformer layers run, <em>charge</em>'s vector has been pulled toward a different region of space in each context. Same word in, four different vectors out, each shaped by what the model attended to along the way.</li>
+        <li><strong>About the filter on the attention view.</strong> We're showing the first layer's attention, averaged across all 12 heads, with special tokens (<code>[CLS]</code>, <code>[SEP]</code>) and punctuation excluded. At deeper layers, <code>charge</code>'s attention concentrates heavily on <code>[SEP]</code> &mdash; the "attention sink" phenomenon the next chapter shows and sources (Xiao et al., 2023). Filtering at the first layer keeps the disambiguation signal visible; the raw, unfiltered weights are in the source data if you want to verify.</li>
+        <li><strong>What this does and doesn't claim.</strong> The mechanism here &mdash; same word, different context, different vector &mdash; is a plain, verifiable fact about real DistilBERT weights. Whether the model <em>understands</em> any of these four meanings in a human sense is a separate and much harder question; we're showing how the math differentiates them, not making a claim about comprehension.</li>
       </ul>
     </div>
   </section>
@@ -2123,6 +2328,176 @@
     backBtn.addEventListener('click', stepBack);
 
     render();
+  })();
+
+  // --- Part 2 Ch 2 subsection: "charge" disambiguation ---
+  // Real attention + hidden-state data from distilbert-base-uncased, run over
+  // four sentences that use "charge" in distinct senses. Produced by
+  // scripts/build_charge_contexts.py. Attention shown is layer 0, averaged
+  // across all 12 heads, then filtered to content tokens and renormalized.
+  // Hidden states are from the final layer (5 of 6). PCA is fit on the five
+  // vectors plotted (static + 4 contextualized), so variance preserved is
+  // about the "charge" spread itself, not the entire token population.
+  const CHARGE_DATA = {
+    "model": "distilbert-base-uncased",
+    "attn_layer": 0,
+    "hidden_layer": 5,
+    "layers_total": 6,
+    "heads": 12,
+    "variance_2d": 0.7356612086296082,
+    "static_embedding_xy": [-6.070478916168213, -3.3387722969055176],
+    "contexts": [
+      {
+        "label": "legal",
+        "text": "The prosecutor dropped the charge in court.",
+        "tokens": ["[CLS]", "the", "prosecutor", "dropped", "the", "charge", "in", "court", ".", "[SEP]"],
+        "charge_index": 5,
+        "attention_content_only": [0.0, 0.0358, 0.2697, 0.1437, 0.2249, 0.0, 0.1442, 0.1818, 0.0, 0.0],
+        "vector_xy": [5.030200958251953, -2.297192335128784]
+      },
+      {
+        "label": "financial",
+        "text": "I disputed the charge on my credit card statement.",
+        "tokens": ["[CLS]", "i", "disputed", "the", "charge", "on", "my", "credit", "card", "statement", ".", "[SEP]"],
+        "charge_index": 4,
+        "attention_content_only": [0.0, 0.0531, 0.1552, 0.2115, 0.0, 0.1489, 0.0781, 0.1223, 0.1004, 0.1305, 0.0, 0.0],
+        "vector_xy": [2.114872455596924, -1.504220724105835]
+      },
+      {
+        "label": "electrical",
+        "text": "The charge built up on the wire and sparked.",
+        "tokens": ["[CLS]", "the", "charge", "built", "up", "on", "the", "wire", "and", "sparked", ".", "[SEP]"],
+        "charge_index": 2,
+        "attention_content_only": [0.0, 0.2337, 0.0, 0.2648, 0.0971, 0.0464, 0.0245, 0.1038, 0.0353, 0.1944, 0.0, 0.0],
+        "vector_xy": [-0.20723074674606323, 1.0024681091308594]
+      },
+      {
+        "label": "physical",
+        "text": "The cavalry charge broke the enemy line.",
+        "tokens": ["[CLS]", "the", "cavalry", "charge", "broke", "the", "enemy", "line", ".", "[SEP]"],
+        "charge_index": 3,
+        "attention_content_only": [0.0, 0.0634, 0.4485, 0.0, 0.2409, 0.0509, 0.1368, 0.0595, 0.0, 0.0],
+        "vector_xy": [-0.8673639297485352, 6.137716770172119]
+      }
+    ]
+  };
+
+  (function renderChargeDemo() {
+    const stripsHost = document.getElementById('charge-strips');
+    const svg = document.getElementById('charge-vectors-svg');
+    const varianceEl = document.getElementById('charge-variance');
+    if (!stripsHost || !svg) return;
+
+    const NS = 'http://www.w3.org/2000/svg';
+    const SPECIAL = new Set(['[CLS]', '[SEP]', '.', ',', ';', ':', '?', '!']);
+
+    // --- Attention strips ---
+
+    for (const ctx of CHARGE_DATA.contexts) {
+      const row = document.createElement('div');
+      row.className = 'charge-strip';
+      row.dataset.sense = ctx.label;
+
+      const label = document.createElement('div');
+      label.className = 'charge-strip-label';
+      label.textContent = ctx.label;
+      row.appendChild(label);
+
+      const sentence = document.createElement('div');
+      sentence.className = 'charge-strip-sentence';
+
+      const weights = ctx.attention_content_only;
+      const maxW = Math.max(...weights);
+
+      for (let i = 0; i < ctx.tokens.length; i++) {
+        const tok = ctx.tokens[i];
+        const isSpecial = SPECIAL.has(tok);
+        const isQuery = i === ctx.charge_index;
+        const span = document.createElement('span');
+        span.className = 'ctok';
+        if (isSpecial) span.classList.add('ctok--special');
+        if (isQuery) span.classList.add('ctok--query');
+        span.textContent = tok;
+        if (!isSpecial && !isQuery) {
+          // Ease the intensity so small-but-nonzero attention is still
+          // visible, matching the Ch 4 heatmap's gamma.
+          const w = weights[i];
+          const n = maxW > 0 ? w / maxW : 0;
+          const intensity = Math.pow(n, 0.55);
+          span.style.setProperty('--tok-w', intensity.toFixed(3));
+        }
+        sentence.appendChild(span);
+      }
+
+      row.appendChild(sentence);
+      stripsHost.appendChild(row);
+    }
+
+    // --- Vector scatter ---
+
+    if (varianceEl) {
+      varianceEl.textContent = `~${Math.round(CHARGE_DATA.variance_2d * 100)}%`;
+    }
+
+    // Points to plot: static first, then the four contextualized vectors.
+    const points = [
+      { sense: 'static', label: 'charge (no context)', xy: CHARGE_DATA.static_embedding_xy },
+      ...CHARGE_DATA.contexts.map(c => ({
+        sense: c.label, label: c.label, xy: c.vector_xy,
+      })),
+    ];
+
+    // PCA coords come out in math orientation (y up); SVG is y-down. Flip y
+    // so the plot reads naturally.
+    const pts = points.map(p => ({ ...p, sx: p.xy[0], sy: -p.xy[1] }));
+
+    // Fit viewBox to the data with ~22% padding so labels don't clip.
+    let xmin = Math.min(...pts.map(p => p.sx));
+    let xmax = Math.max(...pts.map(p => p.sx));
+    let ymin = Math.min(...pts.map(p => p.sy));
+    let ymax = Math.max(...pts.map(p => p.sy));
+    const w = xmax - xmin;
+    const h = ymax - ymin;
+    const padX = w * 0.22;
+    const padY = h * 0.22;
+    xmin -= padX; xmax += padX;
+    ymin -= padY; ymax += padY;
+    svg.setAttribute('viewBox', `${xmin.toFixed(3)} ${ymin.toFixed(3)} ${(xmax - xmin).toFixed(3)} ${(ymax - ymin).toFixed(3)}`);
+
+    // Dashed guide lines from static to each contextualized point. Subtle;
+    // they just reinforce "this vector moved from here to there."
+    const staticPt = pts[0];
+    for (let i = 1; i < pts.length; i++) {
+      const p = pts[i];
+      const line = document.createElementNS(NS, 'line');
+      line.setAttribute('class', 'charge-vec-arrow');
+      line.setAttribute('x1', staticPt.sx);
+      line.setAttribute('y1', staticPt.sy);
+      line.setAttribute('x2', p.sx);
+      line.setAttribute('y2', p.sy);
+      svg.appendChild(line);
+    }
+
+    // Dots + labels.
+    for (const p of pts) {
+      const isStatic = p.sense === 'static';
+      const r = isStatic ? 0.32 : 0.42;
+      const dot = document.createElementNS(NS, 'circle');
+      dot.setAttribute('class', 'charge-vec-dot' + (isStatic ? ' charge-vec-dot--static' : ''));
+      if (!isStatic) dot.setAttribute('data-sense', p.sense);
+      dot.setAttribute('cx', p.sx);
+      dot.setAttribute('cy', p.sy);
+      dot.setAttribute('r', r);
+      svg.appendChild(dot);
+
+      const text = document.createElementNS(NS, 'text');
+      text.setAttribute('class', 'charge-vec-label' + (isStatic ? ' charge-vec-label--static' : ''));
+      // Labels sit to the right of each dot, vertically centered.
+      text.setAttribute('x', p.sx + r + 0.25);
+      text.setAttribute('y', p.sy + 0.18);
+      text.textContent = p.label;
+      svg.appendChild(text);
+    }
   })();
 </script>
 </body>
