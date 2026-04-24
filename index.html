@@ -1460,8 +1460,10 @@
       </ul>
     </div>
 
+    <br /><br />
+
     <p class="lede">
-      LLMs function by providing a <em>plausible</em> next token, but looking plausible is not the same as being true. Take the case of Roberto Mata v. Avianca, Inc., in which a lawyer generated false cases. 
+      LLMs function by providing a <em>plausible</em> next token, but looking plausible is not the same as being true. Take the case of Roberto Mata v. Avianca, Inc., in which a lawyer generated false cases.
     </p>
 
     <div class="demo">
@@ -1687,7 +1689,7 @@
       The map above is static, each token always maps to one fixed embedding. But in real language, the meaning of a word is usually determined by its context. Take the word <em>charge</em>: it could be a legal charge, a credit-card charge, an electrical charge, or a cavalry charge. The token is always the same, and always points to the same embedding. So how does the model know which one you mean?
     </p>
     <p>
-      The answer is the <strong>transformer</strong>, the neural network architecture at the core of every modern chat LLM. The transformer takes the embeddings above, and modifies their positions based on context. This is why your LLM conversations can only get so large before the LLM is forced to forget things, <em>every</em> token in your context affects <em>every</em> new token. The transformer is what gives those probabilities that we saw at the beginning.
+      The answer is the <strong>transformer</strong>, the neural network architecture at the core of every modern LLM. The transformer takes the embeddings above, and modifies their positions based on context. This is why your LLM conversations can only get so large before the LLM is forced to forget things, <em>every</em> token in your context affects <em>every</em> new token. The transformer is what gives those probabilities that we saw at the beginning.
     </p>
     <p>
       The mechanism that does this is called <strong>attention</strong>: for every token in a sentence, the model computes how much each other token matters. The demo below shows exactly that happening to the word <em>charge</em> across four different sentences.
