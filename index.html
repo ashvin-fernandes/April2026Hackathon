@@ -656,7 +656,7 @@
   .point-label {
     /* Fill mode `backwards` applies `from` (opacity: 0) during the
        staggered delay, animates to 1, and then returns opacity to the
-       CSS default — letting the legend focus + dot-hover dim rules
+       CSS default, letting the legend focus + dot-hover dim rules
        below actually take effect. `forwards` was blocking them: CSS
        animation effects outrank non-!important author declarations. */
     animation: point-fade-in 480ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
@@ -1417,7 +1417,7 @@
     </p>
 
     <div class="demo">
-      <div class="prompt-label">The problem — same both times</div>
+      <div class="prompt-label">The problem, same both times</div>
       <div class="prompt">What's 842,019 × 109,310?</div>
 
       <div class="ttb-split">
@@ -1547,11 +1547,11 @@
       </div>
 
       <p class="scale-punchline">
-        <strong>For scale:</strong> at ~11.7 trillion words, Llama 3's training corpus works out to roughly <strong>146 million 80,000-word books</strong> — more than every book Google counted as ever published (~129.8 million, as of 2010). The model has effectively "read" the output of every author in recorded history, and then some.
+        <strong>For scale:</strong> at ~11.7 trillion words, Llama 3's training corpus works out to roughly <strong>146 million 80,000-word books</strong>, more than every book Google counted as ever published (~129.8 million, as of 2010). The model has effectively "read" the output of every author in recorded history, and then some.
       </p>
 
       <p class="scale-sources">
-        Sources: GPT-3 — Brown et al., <a href="https://arxiv.org/abs/2005.14165">arxiv.org/abs/2005.14165</a> (Table 2.2). Llama 2 — Touvron et al., <a href="https://arxiv.org/abs/2307.09288">arxiv.org/abs/2307.09288</a> (§2.1). Llama 3 — Llama Team (Meta), <a href="https://arxiv.org/abs/2407.21783">arxiv.org/abs/2407.21783</a> (§3.2). Frontier-model corpora from OpenAI/Anthropic/Google are not publicly disclosed, so they are omitted. Wikipedia word count from <a href="https://en.wikipedia.org/wiki/Wikipedia:Size_of_Wikipedia">Wikipedia: Size of Wikipedia</a> (March 2026). Adult reading rate from Brysbaert, <em>How many words do we read per minute?</em> (<a href="https://biblio.ugent.be/publication/8647789">2019</a>). Token→word conversion ~0.75 per OpenAI's <a href="https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them">tokenizer notes</a>.
+        Sources: GPT-3, Brown et al., <a href="https://arxiv.org/abs/2005.14165">arxiv.org/abs/2005.14165</a> (Table 2.2). Llama 2, Touvron et al., <a href="https://arxiv.org/abs/2307.09288">arxiv.org/abs/2307.09288</a> (§2.1). Llama 3, Llama Team (Meta), <a href="https://arxiv.org/abs/2407.21783">arxiv.org/abs/2407.21783</a> (§3.2). Frontier-model corpora from OpenAI/Anthropic/Google are not publicly disclosed, so they are omitted. Wikipedia word count from <a href="https://en.wikipedia.org/wiki/Wikipedia:Size_of_Wikipedia">Wikipedia: Size of Wikipedia</a> (March 2026). Adult reading rate from Brysbaert, <em>How many words do we read per minute?</em> (<a href="https://biblio.ugent.be/publication/8647789">2019</a>). Token→word conversion ~0.75 per OpenAI's <a href="https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them">tokenizer notes</a>.
       </p>
     </div>
 
@@ -1722,7 +1722,7 @@
           <svg class="charge-vectors-svg" id="charge-vectors-svg" preserveAspectRatio="xMidYMid meet" aria-label="Scatter plot of charge's vector in five conditions"></svg>
         </div>
         <div class="charge-vectors-caption">
-          Gray dot: <em>charge</em>'s static embedding &mdash; the fixed position from the map above, before any layer touches it. Coloured dots: where <em>charge</em>'s vector lands after the transformer, in each sentence.
+          Gray dot: <em>charge</em>'s static embedding, the fixed position from the map above, before any layer touches it. Coloured dots: where <em>charge</em>'s vector lands after the transformer, in each sentence.
         </div>
       </div>
     </div>
@@ -1732,7 +1732,7 @@
   <section class="chapter" id="chapter-conclusion">
     <h2>That's the basics.</h2>
     <p class="lede">
-      This is the core of how a modern LLM works. The loop &mdash; <strong>tokenization &rarr; embedding &rarr; transformer &rarr; output</strong> &mdash; runs once for every token you type into an LLM, and once more for every token it writes back. A conversation is just thousands of repetitions of that same small cycle.
+      This is the core of how a modern LLM works. The loop, <strong>tokenization &rarr; embedding &rarr; transformer &rarr; output</strong>, runs once for every token you type into an LLM, and once more for every token it writes back. A conversation is thousands of repetitions of that same small cycle.
     </p>
   </section>
 
@@ -2186,13 +2186,13 @@
   ];
 
   const AR_NOTES = {
-    0: `<strong>Non-top pick.</strong> The model picked rank 2 (<code> never</code> at 17%) instead of the top (<code> to</code> at 26%). At temperature &gt; 0, sampling means this happens — the most likely token isn't always the one you get.`,
-    1: `<strong>The distribution changed completely.</strong> One word of context (<code> never</code>) flipped what's likely next — from infinitives to verbs that pair with "never."`,
-    3: `<strong>Another non-top pick.</strong> <code> witness</code> won at rank 2 (only 9% probability); <code> question</code> was the greedy choice at 61%. A different draw would give a completely different sentence — this is how a generic axiom becomes specific legal advice, by chance.`,
+    0: `<strong>Non-top pick.</strong> The model picked rank 2 (<code> never</code> at 17%) instead of the top (<code> to</code> at 26%). At temperature &gt; 0, sampling means this happens, the most likely token isn't always the one you get.`,
+    1: `<strong>The distribution changed completely.</strong> One word of context (<code> never</code>) flipped what's likely next, from infinitives to verbs that pair with "never."`,
+    3: `<strong>Another non-top pick.</strong> <code> witness</code> won at rank 2 (only 9% probability); <code> question</code> was the greedy choice at 61%. A different draw would give a completely different sentence, this is how a generic axiom becomes specific legal advice, by chance.`,
     6: `<strong>Third non-top pick.</strong> <code> whose</code> at 14% beat <code> you</code> at 38%. Notice the pattern: each non-top pick compounds. We're drifting further from the "most predictable" sentence with every roll.`,
-    9: `Look at this distribution — <code> cannot</code>, <code> don</code>, <code> can</code>, <code> do</code> are all close in probability. Real LLMs hit flat distributions like this all the time. The "answer" isn't determined; it's negotiated one token at a time.`,
-    10: `<strong>Fourth non-top pick.</strong> <code> predict</code> at rank 2 (18%); <code> already</code> was on top at 24%. Four non-top picks in 12 steps is about what you'd expect at temperature 0.8–1.0 — realistic, not forced.`,
-    11: `<strong>Done.</strong> 12 loops, 12 predictions, one finished sentence. Four of the twelve were non-top — meaning a different random seed would have given a different sentence with the same flavor. No plan. Just twelve guesses.`,
+    9: `Look at this distribution, <code> cannot</code>, <code> don</code>, <code> can</code>, <code> do</code> are all close in probability. Real LLMs hit flat distributions like this all the time. The "answer" isn't determined; it's negotiated one token at a time.`,
+    10: `<strong>Fourth non-top pick.</strong> <code> predict</code> at rank 2 (18%); <code> already</code> was on top at 24%. Four non-top picks in 12 steps is about what you'd expect at temperature 0.8–1.0, realistic, not forced.`,
+    11: `<strong>Done.</strong> 12 loops, 12 predictions, one finished sentence. Four of the twelve were non-top, meaning a different random seed would have given a different sentence with the same flavor. No plan. Just twelve guesses.`,
   };
 
   (function initAutoregressiveDemo() {
@@ -2244,13 +2244,13 @@
         noteEl.innerHTML = custom;
       } else {
         const tok = AR_STEPS[idx].picked;
-        noteEl.innerHTML = `Picked <code>${formatToken(tok)}</code> — the top candidate. One more guess done; one more token locked in.`;
+        noteEl.innerHTML = `Picked <code>${formatToken(tok)}</code>, the top candidate. One more guess done; one more token locked in.`;
       }
       noteEl.classList.toggle('note-sampling', idx === 0);
     }
 
     function renderDone() {
-      barsEl.innerHTML = `<div class="ar-done">End of sequence. The model picked <code>.</code> — a period, which usually terminates a sentence.</div>`;
+      barsEl.innerHTML = `<div class="ar-done">End of sequence. The model picked <code>.</code>, a period, which usually terminates a sentence.</div>`;
       noteEl.innerHTML = AR_NOTES[12];
       noteEl.classList.remove('note-sampling');
     }
