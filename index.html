@@ -328,113 +328,6 @@
     font-weight: 600;
   }
 
-  .controls {
-    border-top: 1px solid var(--line);
-    padding-top: 28px;
-  }
-
-  .slider-row {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .slider-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-  }
-
-  .slider-label {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--ink);
-  }
-
-  .slider-label .hint {
-    font-weight: 400;
-    color: var(--ink-faint);
-    margin-left: 8px;
-  }
-
-  .slider-value {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 14px;
-    color: var(--accent);
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-  }
-
-  input[type="range"] {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    height: 4px;
-    background: var(--line);
-    border-radius: 2px;
-    outline: none;
-    margin: 8px 0;
-  }
-
-  input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    background: var(--accent);
-    border-radius: 50%;
-    cursor: pointer;
-    border: 3px solid var(--bg-panel);
-    box-shadow: 0 0 0 1px var(--accent);
-    transition: transform 120ms;
-  }
-
-  input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
-  }
-
-  input[type="range"]::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    background: var(--accent);
-    border-radius: 50%;
-    cursor: pointer;
-    border: 3px solid var(--bg-panel);
-    box-shadow: 0 0 0 1px var(--accent);
-  }
-
-  .slider-scale {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    color: var(--ink-faint);
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-  }
-
-  .explainer {
-    margin-top: 48px;
-    padding: 28px 32px;
-    background: var(--bg-subtle);
-    border-left: 3px solid var(--accent-soft);
-    border-radius: 0 8px 8px 0;
-  }
-
-  .explainer h2 {
-    font-size: 15px;
-    font-weight: 600;
-    margin: 0 0 10px;
-    color: var(--ink);
-  }
-
-  .explainer p {
-    margin: 0 0 10px;
-    font-size: 14px;
-    color: var(--ink-soft);
-    line-height: 1.6;
-  }
-
-  .explainer p:last-child { margin-bottom: 0; }
-
   .footnote {
     margin-top: 32px;
     font-size: 12px;
@@ -1279,31 +1172,6 @@
     </div>
 
     <div class="bars" id="bars"></div>
-
-    <div class="controls">
-      <div class="slider-row">
-        <div class="slider-top">
-          <div class="slider-label">
-            Temperature
-            <span class="hint">— how spread-out the probabilities are</span>
-          </div>
-          <div class="slider-value" id="temp-value">1.00</div>
-        </div>
-        <input type="range" id="temp-slider" min="0.1" max="2.5" step="0.05" value="1.0" />
-        <div class="slider-scale">
-          <span>0.1 · focused</span>
-          <span>1.0 · native</span>
-          <span>2.5 · chaotic</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="explainer">
-      <h2 id="explainer-title">Try the slider</h2>
-      <p id="explainer-body">
-        Temperature is a setting that changes the distribution of what tokens are picked. High temperature means that the LLM has a higher chance of choosing a less likely token. Low temperature means it usually picks the most likely one.
-      </p>
-    </div>
   </section>
 
   <p class="footnote">
@@ -1644,10 +1512,6 @@
   ];
 
   const barsEl = document.getElementById('bars');
-  const tempSlider = document.getElementById('temp-slider');
-  const tempValue = document.getElementById('temp-value');
-  const explainerTitle = document.getElementById('explainer-title');
-  const explainerBody = document.getElementById('explainer-body');
 
   function softmax(logits, temperature) {
     const T = Math.max(temperature, 0.01);
@@ -1668,15 +1532,15 @@
 
   function renderBars() {
     const logits = tokens.map(t => t.logit);
-    const probs = softmax(logits, parseFloat(tempSlider.value));
+    const probs = softmax(logits, 1.0);
     const maxProb = Math.max(...probs);
 
     barsEl.innerHTML = tokens.map((t, i) => {
       const prob = probs[i];
       const pct = (prob * 100).toFixed(1);
-      // Bar width is scaled relative to the top bar in this view so the top
-      // candidate always fills the track. This makes shape differences obvious
-      // as temperature changes.
+      // Bar width is scaled relative to the top bar so the top candidate
+      // always fills the track, making the shape of the distribution easy
+      // to read at a glance.
       const widthPct = (prob / maxProb) * 100;
       const isTop = i === 0;
       return `
@@ -1689,37 +1553,7 @@
     }).join('');
   }
 
-  function updateExplainer(T) {
-    let title, body;
-    if (T <= 0.3) {
-      title = "Very focused — the model will almost always pick the top token.";
-      body = "At low temperatures, the top choice gets almost all the probability mass. This is predictable and safe, but often repetitive. Many production systems use temperatures between 0.2 and 0.7 for tasks that need consistency.";
-    } else if (T <= 0.8) {
-      title = "Focused — the model leans hard on its top few guesses.";
-      body = "The top tokens hold most of the probability. The model will mostly stay on the obvious path, with occasional variation. This is a common setting for factual or structured tasks.";
-    } else if (T <= 1.2) {
-      title = "Native — the model's raw probabilities.";
-      body = "At temperature 1.0, you're seeing the distribution the model actually produced, with no rescaling. Many APIs default here, but what consumer products like ChatGPT or Claude.ai use under the hood isn't disclosed.";
-    } else if (T <= 1.8) {
-      title = "Creative — low-probability tokens are now in play.";
-      body = "Higher temperatures flatten the distribution. Unlikely tokens — even surprising ones — can get picked. This often sounds more creative, but also drifts into errors or nonsense more easily.";
-    } else {
-      title = "Chaotic — probabilities are nearly uniform.";
-      body = "At very high temperatures, the model's preferences barely matter. It's close to picking randomly from its vocabulary. Rarely useful in practice — but a good way to see what 'no guidance' looks like.";
-    }
-    explainerTitle.textContent = title;
-    explainerBody.textContent = body;
-  }
-
-  function update() {
-    const T = parseFloat(tempSlider.value);
-    tempValue.textContent = T.toFixed(2);
-    renderBars();
-    updateExplainer(T);
-  }
-
-  tempSlider.addEventListener('input', update);
-  update();
+  renderBars();
 
   // --- Chapter 3: Embeddings scatter plot ---
   // Real GloVe 50-dim embeddings for a curated 42-word vocabulary, projected to
