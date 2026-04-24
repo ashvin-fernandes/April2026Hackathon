@@ -1803,7 +1803,7 @@
     <div class="eyebrow">Chapter 2</div>
     <h2>Embeddings</h2>
     <p class="lede">
-      For every token, the LLM has a corresponding vector (a list of numbers). These are called the model's embeddings. These embeddings are created during the model's initial training, and don't change afterwards. Each number in the vector means nothing by itself, but embeddings define the relationship that each token has with other tokens. Tokens that appear in similar contexts are usually found near each other. What's interesting is that we can find meaning by adding or subtracting the embeddings from each other. For example, if you take the embedding for King, subtract the embedding for Man, and add the embedding for Woman, you'll get close to the token for Queen.
+      For every token, the LLM has a corresponding vector (a list of numbers). These are called the model's embeddings. These embeddings are created during the model's initial training, and don't change afterwards. Each number in the embedding means nothing by itself, but embeddings define the relationship that each token has with other tokens. Think of the embeddings as defining a point in space. Tokens that appear in similar contexts are usually found near each other. What's interesting is that we can find meaning by adding or subtracting the embeddings from each other. For example, if you take the embedding for King, subtract the embedding for Man, and add the embedding for Woman, you'll get close to the token for Queen.
 
       The example below represents tokens in two dimensions, but real LLMs have many many dimensions that define relationships.
     </p>
@@ -1821,17 +1821,12 @@
       </div>
     </div>
 
-    <p class="footnote">
-      <strong>What's GloVe?</strong> A pre-LLM method from Stanford (<a href="https://nlp.stanford.edu/projects/glove/" target="_blank" rel="noopener">Pennington et al., 2014</a>) that assigns every word a fixed vector based on how often words appear together across a huge pile of text. The coordinates above use Stanford's publicly released 50-dimensional vectors, trained on 6 billion words of Wikipedia and news.
-    </p>
-
     <div class="annotations">
       <p>A few things worth noticing:</p>
       <ul>
-        <li><strong>Categories form visible clusters.</strong> Colors group together. Animals group together. Countries group together. Legal terms group together. Nothing in the training told GloVe these were "colors" or "animals" — it just read billions of words of text and learned that words appearing in similar contexts should have similar vectors. Meaning fell out of the math.</li>
-        <li><strong>You're looking at a shadow.</strong> The real embedding is 50 directions at once. PCA projects that down to 2, which loses most of the information (the 2D plot keeps only <strong>~34%</strong> of the original variance). Words that look close in this picture <em>might</em> be close in the real space, but not always. We'll add a "true nearest-neighbor" view next.</li>
-        <li><strong>The axes don't mean anything.</strong> Unlike a normal chart, "up" and "right" aren't defined concepts. PCA just picks the two directions where the words spread out the most. A different word list would produce different axes.</li>
-        <li><strong>This is what the "meaning" layer of the model <em>is</em>.</strong> Every operation downstream — attention, prediction, the whole transformer — runs on vectors like these. Understand this picture and you have the shape of everything the model does with meaning.</li>
+        <li><strong>Categories form visible clusters.</strong> Words that are related to each other in meaning appear near each other. Nothing in the training told the LLM that these were animals or colours, it read billions of words of text and through pattern matching, learned that some words belong near others.</li>
+        <li><strong>This is a flattening of real embeddings.</strong> Real embeddings can be over fifty dimensions, this display is just a reprsentation.</li>
+        <li><strong>There is no meaning to the axes.</strong> A token being towards the top or bottom has no meaning, except in relation to the other tokens.</li>
       </ul>
     </div>
   </section>
