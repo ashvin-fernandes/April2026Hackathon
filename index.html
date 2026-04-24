@@ -1682,12 +1682,12 @@
   </section>
 
   <section class="chapter-subsection" id="chapter-transformers-intro">
-    <h3>Wait &mdash; what's a transformer?</h3>
+    <h3>Transformers</h3>
     <p class="lede">
-      The map above is static: each word sits at one fixed point. But in practice, the same word means different things depending on what's around it &mdash; a legal <em>charge</em>, a credit-card <em>charge</em>, an electrical <em>charge</em>. Meaning isn't really a property of a word alone; it's a property of a word <em>in context</em>.
+      The map above is static &mdash; each token always maps to one fixed embedding. But in real language, the meaning of a word is usually determined by its context. Take the word <em>charge</em>: it could be a legal charge, a credit-card charge, an electrical charge, or a cavalry charge. The token is always the same, and always points to the same embedding. So how does the model know which one you mean?
     </p>
     <p>
-      The thing that bridges those two facts is the <strong>transformer</strong> &mdash; the neural network architecture at the core of every modern chat LLM (GPT, Claude, Llama, Gemini, all of them). Its one job: take the sequence of static embedding vectors from above, and <em>reshape</em> each one based on its neighbors. After a transformer has done its work, <em>charge</em> in &ldquo;cavalry charge&rdquo; has moved to a different region of the space than <em>charge</em> in &ldquo;credit-card charge&rdquo; &mdash; even though both started at the same point on the map.
+      The answer is the <strong>transformer</strong> &mdash; the neural network architecture at the core of every modern chat LLM (GPT, Claude, Llama, Gemini, all of them). Its one job: take the sequence of static embedding vectors from above, and <em>reshape</em> each one based on the words around it. After a transformer has done its work, <em>charge</em> in &ldquo;cavalry charge&rdquo; has moved to a different region of the space than <em>charge</em> in &ldquo;credit-card charge&rdquo; &mdash; even though both started at the same point on the map.
     </p>
     <p>
       The mechanism that does this is called <strong>attention</strong>: for every token in a sentence, the model computes how much each other token matters, then blends those weighted influences back into the token's vector. Stack a dozen layers of attention, and you have a transformer (Vaswani et al., <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">&ldquo;Attention Is All You Need&rdquo;</a>, 2017). The demo below shows exactly that happening to the word <em>charge</em> across four different sentences.
