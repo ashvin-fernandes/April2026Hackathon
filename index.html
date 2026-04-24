@@ -1331,6 +1331,123 @@
     color: var(--ink);
   }
 
+  /* --- Chapter 3 (Part 1): training-data scale viz --- */
+
+  .scale-demo {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 28px 32px;
+    box-shadow: var(--panel-shadow);
+    margin-top: 24px;
+    transition: background-color 200ms ease, border-color 200ms ease;
+  }
+
+  .scale-header {
+    margin-bottom: 22px;
+  }
+
+  .scale-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .scale-sub {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 4px;
+  }
+
+  .scale-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .scale-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    align-items: start;
+    gap: 16px;
+  }
+
+  .scale-label-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .scale-label-sub {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-top: 3px;
+  }
+
+  .scale-bar-area {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .scale-bar-track {
+    height: 26px;
+    background: var(--bar-bg);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .scale-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--bar-grad-start), var(--bar-grad-end));
+    border-radius: 4px;
+    transition: width 400ms cubic-bezier(0.22, 1, 0.36, 1);
+    min-width: 2px;
+  }
+
+  .scale-bar-caption {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.5;
+  }
+
+  .scale-bar-caption strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .scale-punchline {
+    margin-top: 28px;
+    padding: 16px 22px;
+    font-size: 14px;
+    color: var(--ink-soft);
+    background: var(--bg-subtle);
+    border-left: 3px solid var(--highlight-end);
+    border-radius: 0 6px 6px 0;
+    line-height: 1.6;
+  }
+
+  .scale-punchline strong {
+    color: var(--ink);
+  }
+
+  .scale-sources {
+    margin-top: 22px;
+    font-size: 12px;
+    color: var(--ink-faint);
+    line-height: 1.65;
+  }
+
+  .scale-sources a {
+    color: var(--accent);
+  }
+
   @media (max-width: 640px) {
     .page { padding: 40px 20px 64px; }
     h1 { font-size: 30px; }
@@ -1342,6 +1459,8 @@
     .prompt { font-size: 16px; padding: 14px 16px; }
     .bar-row { grid-template-columns: 96px 1fr 52px; gap: 10px; }
     .bar-token { font-size: 12px; }
+    .scale-demo { padding: 20px 18px; }
+    .scale-row { grid-template-columns: 1fr; gap: 8px; }
     .chapter { margin-top: 64px; padding-top: 40px; }
     .chapter h2 { font-size: 26px; }
     .token-demo { padding: 20px; }
@@ -1434,10 +1553,6 @@
         <button id="ar-step" class="ar-btn ar-btn-primary">Step forward →</button>
       </div>
     </div>
-
-    <div class="annotations">
-      An important understanding here is that LLMs do not think or reason before they write, the writing IS the reasoning.
-    </div>
   </section>
 
   <section class="chapter" id="chapter-think-by-writing">
@@ -1479,22 +1594,16 @@
           <div class="ttb-verdict ttb-verdict-right">Correct.</div>
         </div>
       </div>
-      <p style="margin-top: 18px; text-align: right; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: var(--ink-faint); letter-spacing: 0.06em;">Sonnet 4.6. Note that Opus may actually call a math tool to solve this!</p>
+      <p style="margin-top: 18px; text-align: right; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: var(--ink-faint); letter-spacing: 0.06em;">Sonnet 4.6</p>
     </div>
 
     <div class="annotations">
       <ul>
-        <li>Math is normally trivial for computers, but LLMs can run into issues. For simple math problems using common numbers, LLMs will usually get the answer right. Those problems are part of the LLMs' training data, so the model will be strongly pointed towards the right answer. </li>
-        <li>But for uncommon equations like the one above, the LLM is just doing its best to get to an answer that seems plausible. This is what's scary about AI hallucinations. The answers they give seem correct, because they've been heavily trained to look correct! </li>
-        <li>You may have seen some LLMs with a <em>thinking</em> section before they give out their final output. This is partially marketing, but as seen above, giving the LLM additional tokens to reason with can improve performance. However, those thinking tokens are not a special internal part of the AI, they're exactly the same as the tokens in the final output. Other models may still be doing this "thinking" but not showing it to you in the output.</li>
-        <li>In this particular case, it's probably best just to ask the AI to use a calculator tool, or write a short script to get the answer.</li>
+        <li><strong>Math is normally trivial for computers,</strong> but LLMs can run into issues. For simple math problems using common numbers, LLMs will usually get the answer right. Those problems are part of the LLMs' training data, so the model will be strongly pointed towards the right answer. </li>
+        <li><strong>LLMs are designed to give answers that look correct.</strong> For uncommon equations like the one above, the LLM is just doing its best to get to an answer that seems plausible. This is what's scary about AI hallucinations. The answers they give seem correct, because they've been heavily trained to look correct! </li>
+        <li><strong> More tokens allow for more reasoning.</strong>You may have seen some LLMs with a <em>thinking</em> section before they give out their final output. As seen above, giving the LLM additional tokens to reason with can improve performance. Those thinking tokens are not a special internal part of the AI, they're exactly the same as the tokens in the final output. Other models may still be doing this "thinking" but not showing it to you in the output.</li>
+        <li>Current AIs often solve problems like these by calling a tool. When I tried the above equation on Opus 4.7, it chose to build a quick python script to get the answer rather than trying to reason it out.</li>
       </ul>
-
-      <p style="margin-top: 24px; font-size: 13px; color: var(--ink-faint);">
-        <sup>1</sup> Wei et al., <em>Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</em> (NeurIPS 2022): <a href="https://arxiv.org/abs/2201.11903" style="color: var(--accent);">arxiv.org/abs/2201.11903</a>.<br />
-        <sup>2</sup> OpenAI, <em>Learning to reason with LLMs</em> (introduction of o1, Sept. 2024): <a href="https://openai.com/index/learning-to-reason-with-llms/" style="color: var(--accent);">openai.com</a>.<br />
-        <sup>3</sup> Anthropic, <em>Building with extended thinking</em> (Claude docs): <a href="https://platform.claude.com/docs/en/docs/build-with-claude/extended-thinking" style="color: var(--accent);">platform.claude.com</a>.
-      </p>
     </div>
 
     <p class="lede">
@@ -1526,8 +1635,72 @@
       If an LLM is "just" predicting the next token without any underlying understanding, why is it so accurate so often?
     </p>
     <p>
-      The short answer is that LLMs have a LOT of training data, and that "plausible" has a lot of overlap with "true". When asked to answer a math question, the LLM has tons of math data that it looks at to point it in the right direction. When asked to find a specific case, it has huge amounts of legal data that it can look at in order to find what you're looking for.
+      The short answer is that LLMs have a LOT of training data, and that "plausible" has a lot of overlap with "true". LLMs are trained by looking at pre-existing data, and using that data to decide how to continue their writing. That data is part of what determines the probabilities we saw in the previous sections. When asked to answer a math question, the LLM has tons of math data that it looks at to point it in the right direction. When asked to find a specific case, it has huge amounts of legal data that it can look at in order to find what you're looking for.
     </p>
+
+    <div class="scale-demo">
+      <div class="scale-header">
+        <div class="scale-title">Training data, to scale</div>
+        <div class="scale-sub">logarithmic. reading time assumes 238 wpm, 24 hours a day.</div>
+      </div>
+
+      <div class="scale-rows">
+
+        <div class="scale-row">
+          <div>
+            <div class="scale-label-title">English Wikipedia</div>
+            <div class="scale-label-sub">the baseline</div>
+          </div>
+          <div class="scale-bar-area">
+            <div class="scale-bar-track"><div class="scale-bar" style="width: 5%;"></div></div>
+            <div class="scale-bar-caption"><strong>~5.1 billion words.</strong> 1× itself · ~41 years to read.</div>
+          </div>
+        </div>
+
+        <div class="scale-row">
+          <div>
+            <div class="scale-label-title">GPT-3</div>
+            <div class="scale-label-sub">OpenAI, 2020</div>
+          </div>
+          <div class="scale-bar-area">
+            <div class="scale-bar-track"><div class="scale-bar" style="width: 50%;"></div></div>
+            <div class="scale-bar-caption"><strong>300 billion tokens</strong> (~225B words). ~44× Wikipedia · ~1,800 years to read.</div>
+          </div>
+        </div>
+
+        <div class="scale-row">
+          <div>
+            <div class="scale-label-title">Llama 2</div>
+            <div class="scale-label-sub">Meta, 2023</div>
+          </div>
+          <div class="scale-bar-area">
+            <div class="scale-bar-track"><div class="scale-bar" style="width: 72%;"></div></div>
+            <div class="scale-bar-caption"><strong>2 trillion tokens</strong> (~1.5T words). ~290× Wikipedia · ~12,000 years to read.</div>
+          </div>
+        </div>
+
+        <div class="scale-row">
+          <div>
+            <div class="scale-label-title">Llama 3 (flagship)</div>
+            <div class="scale-label-sub">Meta, 2024</div>
+          </div>
+          <div class="scale-bar-area">
+            <div class="scale-bar-track"><div class="scale-bar" style="width: 96%;"></div></div>
+            <div class="scale-bar-caption"><strong>15.6 trillion tokens</strong> (~11.7T words). ~2,280× Wikipedia · ~94,000 years to read.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <p class="scale-punchline">
+        <strong>For scale:</strong> at ~11.7 trillion words, Llama 3's training corpus works out to roughly <strong>146 million 80,000-word books</strong> — more than every book Google counted as ever published (~129.8 million, as of 2010). The model has effectively "read" the output of every author in recorded history, and then some.
+      </p>
+
+      <p class="scale-sources">
+        Sources: GPT-3 — Brown et al., <a href="https://arxiv.org/abs/2005.14165">arxiv.org/abs/2005.14165</a> (Table 2.2). Llama 2 — Touvron et al., <a href="https://arxiv.org/abs/2307.09288">arxiv.org/abs/2307.09288</a> (§2.1). Llama 3 — Llama Team (Meta), <a href="https://arxiv.org/abs/2407.21783">arxiv.org/abs/2407.21783</a> (§3.2). Frontier-model corpora from OpenAI/Anthropic/Google are not publicly disclosed, so they are omitted. Wikipedia word count from <a href="https://en.wikipedia.org/wiki/Wikipedia:Size_of_Wikipedia">Wikipedia: Size of Wikipedia</a> (March 2026). Adult reading rate from Brysbaert, <em>How many words do we read per minute?</em> (<a href="https://biblio.ugent.be/publication/8647789">2019</a>). Token→word conversion ~0.75 per OpenAI's <a href="https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them">tokenizer notes</a>.
+      </p>
+    </div>
+
     <p>
       The long answer is in the rest of this page.
     </p>
@@ -1574,7 +1747,7 @@
           <div class="model-box">
             <div class="model-box-label">Neural network</div>
             <div class="model-box-body">
-              Billions of parameters crunch the input numbers and emit a sequence of output numbers that (hopefully) make sense as a reply.
+              The LLM crunches the input tokens and emits a sequence of output tokens that (hopefully) make sense as a reply.
               <span class="model-box-footnote">We'll explain what happens here in a bit.</span>
             </div>
           </div>
@@ -1608,23 +1781,27 @@
         </div>
 
       </div>
+      OpenAI provides an example tokenizer here that you can look at: https://platform.openai.com/tokenizer
     </div>
 
     <div class="annotations">
       <p>A few things worth noticing:</p>
       <ul>
-        <li><strong>"Jurisprudence" splits into multiple tokens.</strong> Uncommon words tend to use multiple tokens. In the input (lowercase, with a leading space) it becomes three tokens: <code>·juris</code>, <code>pr</code>, <code>udence</code>. In the output (capital J, no leading space, sentence-start) it becomes <em>four</em>: <code>Jur</code>, <code>is</code>, <code>pr</code>, <code>udence</code>. Capitalization and position change the split.</li>
-        <li><strong>Tokens reuse numeric IDs across contexts.</strong> <code>pr</code> is token <code>652</code> both times it appears. <code>udence</code> is <code>74193</code>. <code>·is</code> (with leading space) is <code>374</code>. The vocabulary is fixed once during training — same word-pieces, same numbers, wherever they show up.</li>
+        <li><strong>"Jurisprudence" splits into multiple tokens.</strong> Tokens are not always discrete words, uncommon words tend to use multiple tokens. There can also be differences in token usage depending on capitalization. In the input (lowercase, with a leading space) it becomes three tokens: <code>·juris</code>, <code>pr</code>, <code>udence</code>. In the output (capital J, no leading space, sentence-start) it becomes <em>four</em>: <code>Jur</code>, <code>is</code>, <code>pr</code>, <code>udence</code>. For simplicity, we'll be using mostly single word tokens.</li>
+        <li><strong>Tokens reuse numeric IDs across contexts.</strong> <code>pr</code> is token <code>652</code> both times it appears. <code>udence</code> is <code>74193</code>. <code>·philosophy</code> (with leading space) is <code>19675</code>. These assignments are made when the LLM is trained, they don't change during usage.</li>
         <li><strong>The model never actually sees English.</strong> Only numbers. Whatever it "knows" about grammar, meaning, or legal theory is computed from operations on these token IDs.</li>
+        <li><strong>Tokens determine cost.</strong> The amount that you're charged for using an LLM is the based on both the amount of tokens you input + the amount of tokens returned.</li>
       </ul>
     </div>
   </section>
 
   <section class="chapter" id="chapter-embeddings">
     <div class="eyebrow">Chapter 2</div>
-    <h2>Meaning lives in space</h2>
+    <h2>Embeddings</h2>
     <p class="lede">
-      Once text is tokens and tokens are numbers, the model's next move is to turn each number into a <em>vector</em> — a long list of numbers that plants the token somewhere in a high-dimensional space. The beautiful part: the model learns these positions so that words with similar meanings end up close together. Below, 42 real English words embedded by GloVe into 50 dimensions, projected down to 2 so you can actually see them.
+      For every token, the LLM has a corresponding vector (a list of numbers). These are called the model's embeddings. These embeddings are created during the model's initial training, and don't change afterwards. Each number in the vector means nothing by itself, but embeddings define the relationship that each token has with other tokens. Tokens that appear in similar contexts are usually found near each other. What's interesting is that we can find meaning by adding or subtracting the embeddings from each other. For example, if you take the embedding for King, subtract the embedding for Man, and add the embedding for Woman, you'll get close to the token for Queen.
+
+      The example below represents tokens in two dimensions, but real LLMs have many many dimensions that define relationships.
     </p>
 
     <div class="embedding-demo" id="embedding-demo">
@@ -1636,7 +1813,7 @@
         <svg class="embedding-svg" id="embedding-svg" viewBox="-3.6 -3.6 7.2 7.2" preserveAspectRatio="xMidYMid meet"></svg>
       </div>
       <div class="embedding-caption">
-        Each dot is a word. Position shows where GloVe placed it in 50-dimensional meaning-space, squashed down to 2 via PCA for display. Hover any word to focus; hover a category label to filter.
+        Each dot is a token. Hover oveer any token to focus; hover over a category label to filter.
       </div>
     </div>
 
