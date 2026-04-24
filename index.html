@@ -1818,9 +1818,13 @@
       svg.appendChild(line);
     }
 
-    // Two layers: all dots first, then all labels. This keeps every label
-    // visually on top of every dot, so no later-drawn dot can obscure an
-    // earlier-drawn word.
+    // Three layers, back-to-front:
+    //   dotsLayer    -- all circles
+    //   labelsLayer  -- all text labels (rendered on top of every dot)
+    //   focusLayer   -- receives a clone of the hovered label so it
+    //                   visually sits above every other label without
+    //                   the original ever moving in the DOM. pointer-
+    //                   events: none means it never intercepts input.
     const dotsLayer = document.createElementNS(NS, 'g');
     dotsLayer.setAttribute('class', 'dots-layer');
     svg.appendChild(dotsLayer);
@@ -1828,6 +1832,11 @@
     const labelsLayer = document.createElementNS(NS, 'g');
     labelsLayer.setAttribute('class', 'labels-layer');
     svg.appendChild(labelsLayer);
+
+    const focusLayer = document.createElementNS(NS, 'g');
+    focusLayer.setAttribute('class', 'focus-layer');
+    focusLayer.style.pointerEvents = 'none';
+    svg.appendChild(focusLayer);
 
     EMBEDDING_DATA.forEach((d, i) => {
       const delay = (300 + i * 22) + 'ms';
@@ -1854,23 +1863,53 @@
       labelsLayer.appendChild(t);
     });
 
-    // Hover linking: dots and labels live in separate layers. On
-    // hover we toggle matching classes (by data-word) and move the
-    // hovered dot + label to the end of their layers so they render
-    // on top of any overlapping neighbors -- SVG z-order = document
-    // order, so appendChild is the bring-to-front primitive.
-    function setHover(word, on) {
+    // Hover linking. Single "currentlyHovered" word is tracked to
+    // guard against the stuck-hover bug that appendChild caused in
+    // the previous version -- we never move the original dot or
+    // label, we just toggle classes and drop a clone of the label
+    // into focusLayer so the hovered word renders above everyone
+    // else without disturbing DOM order or mouse tracking.
+    let currentlyHovered = null;
+
+    function clearFocusClone() {
+      while (focusLayer.firstChild) focusLayer.removeChild(focusLayer.firstChild);
+    }
+
+    function applyHover(word) {
       const dot = dotsLayer.querySelector(`.point-dot[data-word="${word}"]`);
       const label = labelsLayer.querySelector(`.point-label[data-word="${word}"]`);
-      if (dot) {
-        dot.classList.toggle('is-hovered', on);
-        if (on) dotsLayer.appendChild(dot);
-      }
+      if (dot) dot.classList.add('is-hovered');
       if (label) {
-        label.classList.toggle('is-hovered', on);
-        if (on) labelsLayer.appendChild(label);
+        label.classList.add('is-hovered');
+        clearFocusClone();
+        const clone = label.cloneNode(true);
+        clone.removeAttribute('data-word');
+        clone.classList.add('focus-clone');
+        focusLayer.appendChild(clone);
       }
-      svg.classList.toggle('has-hover', on);
+      svg.classList.add('has-hover');
+    }
+
+    function clearHover(word) {
+      const dot = dotsLayer.querySelector(`.point-dot[data-word="${word}"]`);
+      const label = labelsLayer.querySelector(`.point-label[data-word="${word}"]`);
+      if (dot) dot.classList.remove('is-hovered');
+      if (label) label.classList.remove('is-hovered');
+      clearFocusClone();
+      svg.classList.remove('has-hover');
+    }
+
+    function setHover(word, on) {
+      if (on) {
+        if (currentlyHovered && currentlyHovered !== word) {
+          clearHover(currentlyHovered);
+        }
+        applyHover(word);
+        currentlyHovered = word;
+      } else if (word === currentlyHovered) {
+        clearHover(word);
+        currentlyHovered = null;
+      }
     }
 
     dotsLayer.addEventListener('mouseover', (e) => {
@@ -1892,6 +1931,15 @@
     labelsLayer.addEventListener('mouseout', (e) => {
       const label = e.target.closest('.point-label');
       if (label) setHover(label.getAttribute('data-word'), false);
+    });
+
+    // Safety net: if the cursor leaves the whole SVG, drop any
+    // lingering hover state.
+    svg.addEventListener('mouseleave', () => {
+      if (currentlyHovered) {
+        clearHover(currentlyHovered);
+        currentlyHovered = null;
+      }
     });
   })();
 
