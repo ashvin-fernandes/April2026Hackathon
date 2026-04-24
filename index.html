@@ -851,8 +851,17 @@
     overflow: visible;
   }
 
+  .charge-vec-dot {
+    transform-origin: center;
+    transform-box: fill-box;
+    cursor: pointer;
+    transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                opacity 200ms ease;
+  }
+
   .charge-vec-dot--static {
     fill: var(--ink-faint);
+    cursor: default;
   }
 
   .charge-vec-dot[data-sense="legal"]      { fill: var(--cat-legal); }
@@ -860,13 +869,24 @@
   .charge-vec-dot[data-sense="electrical"] { fill: var(--cat-animals); }
   .charge-vec-dot[data-sense="physical"]   { fill: var(--cat-colors); }
 
+  /* Connecting lines: hidden by default, drawn in on hover via
+     stroke-dashoffset animation (lines have pathLength="1"). */
   .charge-vec-arrow {
     fill: none;
-    stroke: var(--line);
-    stroke-width: 0.04;
-    stroke-dasharray: 0.18 0.18;
-    opacity: 0.65;
+    stroke-width: 0.06;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    opacity: 0;
+    transition: stroke-dashoffset 620ms cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 180ms ease,
+                stroke-width 180ms ease;
   }
+
+  .charge-vec-arrow[data-sense="legal"]      { stroke: var(--cat-legal); }
+  .charge-vec-arrow[data-sense="financial"]  { stroke: var(--cat-time); }
+  .charge-vec-arrow[data-sense="electrical"] { stroke: var(--cat-animals); }
+  .charge-vec-arrow[data-sense="physical"]   { stroke: var(--cat-colors); }
 
   .charge-vec-label {
     font-family: inherit;
@@ -874,12 +894,65 @@
     font-weight: 500;
     fill: var(--ink);
     pointer-events: none;
+    transition: opacity 200ms ease, font-weight 200ms ease;
   }
 
   .charge-vec-label--static {
     fill: var(--ink-faint);
     font-weight: 400;
     font-style: italic;
+  }
+
+  /* Focus-on-hover: when a sense is active, dim the others and animate
+     the hovered sense's line into place. The hovered dot gets a small pop. */
+
+  .charge-strip {
+    cursor: pointer;
+    outline: none;
+    transition: opacity 200ms ease, background 200ms ease;
+  }
+
+  .charge-strip:focus-visible {
+    box-shadow: 0 0 0 2px var(--charge-color);
+  }
+
+  .charge-demo[data-hover] .charge-strip,
+  .charge-demo[data-hover] .charge-vec-dot[data-sense]:not([data-sense="static"]),
+  .charge-demo[data-hover] .charge-vec-label[data-sense]:not([data-sense="static"]) {
+    opacity: 0.22;
+  }
+
+  .charge-demo[data-hover="legal"]      .charge-strip[data-sense="legal"],
+  .charge-demo[data-hover="financial"]  .charge-strip[data-sense="financial"],
+  .charge-demo[data-hover="electrical"] .charge-strip[data-sense="electrical"],
+  .charge-demo[data-hover="physical"]   .charge-strip[data-sense="physical"] {
+    opacity: 1;
+    background: color-mix(in srgb, var(--charge-color) 12%, transparent);
+  }
+
+  .charge-demo[data-hover="legal"]      .charge-vec-dot[data-sense="legal"],
+  .charge-demo[data-hover="financial"]  .charge-vec-dot[data-sense="financial"],
+  .charge-demo[data-hover="electrical"] .charge-vec-dot[data-sense="electrical"],
+  .charge-demo[data-hover="physical"]   .charge-vec-dot[data-sense="physical"] {
+    opacity: 1;
+    transform: scale(1.35);
+  }
+
+  .charge-demo[data-hover="legal"]      .charge-vec-label[data-sense="legal"],
+  .charge-demo[data-hover="financial"]  .charge-vec-label[data-sense="financial"],
+  .charge-demo[data-hover="electrical"] .charge-vec-label[data-sense="electrical"],
+  .charge-demo[data-hover="physical"]   .charge-vec-label[data-sense="physical"] {
+    opacity: 1;
+    font-weight: 600;
+  }
+
+  .charge-demo[data-hover="legal"]      .charge-vec-arrow[data-sense="legal"],
+  .charge-demo[data-hover="financial"]  .charge-vec-arrow[data-sense="financial"],
+  .charge-demo[data-hover="electrical"] .charge-vec-arrow[data-sense="electrical"],
+  .charge-demo[data-hover="physical"]   .charge-vec-arrow[data-sense="physical"] {
+    opacity: 1;
+    stroke-dashoffset: 0;
+    stroke-width: 0.11;
   }
 
   .charge-vectors-caption {
@@ -1581,10 +1654,10 @@
   <section class="chapter-subsection" id="chapter-embeddings-context">
     <h3>But in context, <em>charge</em> isn't one thing</h3>
     <p class="lede">
-      The map above is static &mdash; <em>charge</em> sits at one point in that space, always. But in real sentences, <em>charge</em> could be a legal charge, a credit-card charge, an electrical charge, or a cavalry charge, and the sentence around it is what decides. Turning that context into a different vector is the job of <em>attention</em> &mdash; the subject of the next chapter. Here's what it looks like, on real weights, for four sentences.
+      The map above is static &mdash; <em>charge</em> sits at one point in that space, always. But in real sentences, <em>charge</em> could be a legal charge, a credit-card charge, an electrical charge, or a cavalry charge, and the sentence around it is what decides. Turning that context into a different vector is the job of <em>attention</em> &mdash; the subject of the next chapter. Here's what it looks like, on real weights, for four sentences. <strong>Hover any sentence</strong> to isolate that sense and watch <em>charge</em>'s vector travel from its starting point to where attention carries it.
     </p>
 
-    <div class="charge-demo">
+    <div class="charge-demo" id="charge-demo">
       <div class="charge-panel">
         <div class="charge-panel-head">
           <div class="charge-panel-title">Where does <em>charge</em> look in each sentence?</div>
@@ -2532,13 +2605,16 @@
     ymin -= padY; ymax += padY;
     svg.setAttribute('viewBox', `${xmin.toFixed(3)} ${ymin.toFixed(3)} ${(xmax - xmin).toFixed(3)} ${(ymax - ymin).toFixed(3)}`);
 
-    // Dashed guide lines from static to each contextualized point. Subtle;
-    // they just reinforce "this vector moved from here to there."
+    // Connecting lines from static to each contextualized point. Hidden by
+    // default (stroke-dashoffset = 1 with pathLength = 1); draw in on hover
+    // via CSS transition.
     const staticPt = pts[0];
     for (let i = 1; i < pts.length; i++) {
       const p = pts[i];
       const line = document.createElementNS(NS, 'line');
       line.setAttribute('class', 'charge-vec-arrow');
+      line.setAttribute('data-sense', p.sense);
+      line.setAttribute('pathLength', '1');
       line.setAttribute('x1', staticPt.sx);
       line.setAttribute('y1', staticPt.sy);
       line.setAttribute('x2', p.sx);
@@ -2552,7 +2628,7 @@
       const r = isStatic ? 0.32 : 0.42;
       const dot = document.createElementNS(NS, 'circle');
       dot.setAttribute('class', 'charge-vec-dot' + (isStatic ? ' charge-vec-dot--static' : ''));
-      if (!isStatic) dot.setAttribute('data-sense', p.sense);
+      dot.setAttribute('data-sense', p.sense);
       dot.setAttribute('cx', p.sx);
       dot.setAttribute('cy', p.sy);
       dot.setAttribute('r', r);
@@ -2560,11 +2636,41 @@
 
       const text = document.createElementNS(NS, 'text');
       text.setAttribute('class', 'charge-vec-label' + (isStatic ? ' charge-vec-label--static' : ''));
-      // Labels sit to the right of each dot, vertically centered.
+      text.setAttribute('data-sense', p.sense);
       text.setAttribute('x', p.sx + r + 0.25);
       text.setAttribute('y', p.sy + 0.18);
       text.textContent = p.label;
       svg.appendChild(text);
+    }
+
+    // --- Hover interaction ---
+    // Hovering (or focusing) a strip or a colored dot sets data-hover on the
+    // demo container. CSS does everything from there: dims the unhovered
+    // senses, emphasizes the hovered one, and animates the line from the
+    // static point to the hovered destination.
+    const demo = document.getElementById('charge-demo');
+    if (demo) {
+      function setHover(sense) {
+        if (sense) demo.setAttribute('data-hover', sense);
+        else demo.removeAttribute('data-hover');
+      }
+
+      // Strips: keyboard-accessible via tabindex + focus handlers.
+      demo.querySelectorAll('.charge-strip').forEach(strip => {
+        const sense = strip.dataset.sense;
+        strip.setAttribute('tabindex', '0');
+        strip.addEventListener('mouseenter', () => setHover(sense));
+        strip.addEventListener('mouseleave', () => setHover(null));
+        strip.addEventListener('focus', () => setHover(sense));
+        strip.addEventListener('blur', () => setHover(null));
+      });
+
+      // Colored dots in the scatter. The static dot isn't interactive.
+      demo.querySelectorAll('.charge-vec-dot:not(.charge-vec-dot--static)').forEach(dot => {
+        const sense = dot.dataset.sense;
+        dot.addEventListener('mouseenter', () => setHover(sense));
+        dot.addEventListener('mouseleave', () => setHover(null));
+      });
     }
   })();
 </script>
