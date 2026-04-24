@@ -692,8 +692,8 @@
     stroke: var(--bg-subtle);
     stroke-width: 0.07;
     stroke-linejoin: round;
-    pointer-events: none;
     dominant-baseline: middle;
+    cursor: default;
     transition: font-weight 180ms ease, fill 180ms ease, opacity 180ms ease;
   }
 
@@ -1854,13 +1854,22 @@
       labelsLayer.appendChild(t);
     });
 
-    // Hover linking: since dots and labels live in separate layers, we
-    // toggle matching classes in JS based on the hovered dot's data-word.
+    // Hover linking: dots and labels live in separate layers. On
+    // hover we toggle matching classes (by data-word) and move the
+    // hovered dot + label to the end of their layers so they render
+    // on top of any overlapping neighbors -- SVG z-order = document
+    // order, so appendChild is the bring-to-front primitive.
     function setHover(word, on) {
       const dot = dotsLayer.querySelector(`.point-dot[data-word="${word}"]`);
       const label = labelsLayer.querySelector(`.point-label[data-word="${word}"]`);
-      if (dot) dot.classList.toggle('is-hovered', on);
-      if (label) label.classList.toggle('is-hovered', on);
+      if (dot) {
+        dot.classList.toggle('is-hovered', on);
+        if (on) dotsLayer.appendChild(dot);
+      }
+      if (label) {
+        label.classList.toggle('is-hovered', on);
+        if (on) labelsLayer.appendChild(label);
+      }
       svg.classList.toggle('has-hover', on);
     }
 
@@ -1868,10 +1877,21 @@
       const dot = e.target.closest('.point-dot');
       if (dot) setHover(dot.getAttribute('data-word'), true);
     });
-
     dotsLayer.addEventListener('mouseout', (e) => {
       const dot = e.target.closest('.point-dot');
       if (dot) setHover(dot.getAttribute('data-word'), false);
+    });
+
+    // Labels are also hoverable -- the text provides a bigger hit
+    // target than the 0.1-unit dot, and it handles the common case
+    // where a label visually covers the dot you're aiming for.
+    labelsLayer.addEventListener('mouseover', (e) => {
+      const label = e.target.closest('.point-label');
+      if (label) setHover(label.getAttribute('data-word'), true);
+    });
+    labelsLayer.addEventListener('mouseout', (e) => {
+      const label = e.target.closest('.point-label');
+      if (label) setHover(label.getAttribute('data-word'), false);
     });
   })();
 
