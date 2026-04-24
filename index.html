@@ -1684,20 +1684,20 @@
   <section class="chapter-subsection" id="chapter-transformers-intro">
     <h3>Transformers</h3>
     <p class="lede">
-      The map above is static &mdash; each token always maps to one fixed embedding. But in real language, the meaning of a word is usually determined by its context. Take the word <em>charge</em>: it could be a legal charge, a credit-card charge, an electrical charge, or a cavalry charge. The token is always the same, and always points to the same embedding. So how does the model know which one you mean?
+      The map above is static, each token always maps to one fixed embedding. But in real language, the meaning of a word is usually determined by its context. Take the word <em>charge</em>: it could be a legal charge, a credit-card charge, an electrical charge, or a cavalry charge. The token is always the same, and always points to the same embedding. So how does the model know which one you mean?
     </p>
     <p>
-      The answer is the <strong>transformer</strong> &mdash; the neural network architecture at the core of every modern chat LLM (GPT, Claude, Llama, Gemini, all of them). Its one job: take the sequence of static embedding vectors from above, and <em>reshape</em> each one based on the words around it. After a transformer has done its work, <em>charge</em> in &ldquo;cavalry charge&rdquo; has moved to a different region of the space than <em>charge</em> in &ldquo;credit-card charge&rdquo; &mdash; even though both started at the same point on the map.
+      The answer is the <strong>transformer</strong>, the neural network architecture at the core of every modern chat LLM. The transformer takes the embeddings above, and modifies their positions based on context. This is why your LLM conversations can only get so large before the LLM is forced to forget things, <em>every</em> token in your context affects <em>every</em> new token. The transformer is what gives those probabilities that we saw at the beginning.
     </p>
     <p>
-      The mechanism that does this is called <strong>attention</strong>: for every token in a sentence, the model computes how much each other token matters, then blends those weighted influences back into the token's vector. Stack a dozen layers of attention, and you have a transformer (Vaswani et al., <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">&ldquo;Attention Is All You Need&rdquo;</a>, 2017). The demo below shows exactly that happening to the word <em>charge</em> across four different sentences.
+      The mechanism that does this is called <strong>attention</strong>: for every token in a sentence, the model computes how much each other token matters. The demo below shows exactly that happening to the word <em>charge</em> across four different sentences.
     </p>
   </section>
 
   <section class="chapter-subsection" id="chapter-embeddings-context">
-    <h3>Same word, four different places</h3>
+    <h3>Same word, different context</h3>
     <p class="lede">
-      Four sentences, four meanings for <em>charge</em>, run through a real transformer (DistilBERT). The static embedding for <em>charge</em> is the same each time &mdash; but after the transformer's layers run, the vector has ended up in four meaningfully different places. <strong>Hover any sentence</strong> to isolate that sense and watch <em>charge</em>'s vector travel from its starting point to where attention carries it.
+      Four sentences, four meanings for <em>charge</em>, run through a real transformer (DistilBERT). The static embedding for <em>charge</em> is the same each time, but after the transformer's layers run, the vector has ended up in four meaningfully different places. <strong>Hover any sentence</strong> to isolate that sense and watch <em>charge</em>'s vector travel from its starting point to where attention carries it.
     </p>
 
     <div class="charge-demo" id="charge-demo">
@@ -1705,7 +1705,7 @@
         <div class="charge-panel-head">
           <div class="charge-panel-title">Where does <em>charge</em> look in each sentence?</div>
           <div class="charge-panel-sub">
-            attention from <code>charge</code> to each content word &middot; layer 1 of 6 &middot; averaged across 12 heads
+            attention from <code>charge</code> to each content word &middot;
           </div>
         </div>
         <div class="charge-strips" id="charge-strips"></div>
@@ -1715,27 +1715,25 @@
         <div class="charge-panel-head">
           <div class="charge-panel-title">Where does <em>charge</em> land after the full transformer?</div>
           <div class="charge-panel-sub">
-            the vector for <code>charge</code> after all 6 layers &middot; 768 dimensions projected to 2 via PCA (<span id="charge-variance">~74%</span> variance preserved)
+            the vector for <code>charge</code> 
           </div>
         </div>
         <div class="charge-vectors-wrap">
           <svg class="charge-vectors-svg" id="charge-vectors-svg" preserveAspectRatio="xMidYMid meet" aria-label="Scatter plot of charge's vector in five conditions"></svg>
         </div>
         <div class="charge-vectors-caption">
-          Gray dot: <em>charge</em>'s static embedding &mdash; the fixed position from the map above, before any layer touches it. Colored dots: where <em>charge</em>'s vector lands after the transformer, in each sentence.
+          Gray dot: <em>charge</em>'s static embedding &mdash; the fixed position from the map above, before any layer touches it. Coloured dots: where <em>charge</em>'s vector lands after the transformer, in each sentence.
         </div>
       </div>
     </div>
 
-    <div class="annotations">
-      <p>Reading these pictures together:</p>
-      <ul>
-        <li><strong>Same word, different attention, different neighborhood.</strong> In each sentence, <code>charge</code>'s attention spreads across the content words and concentrates on the ones that disambiguate its meaning &mdash; <em>prosecutor</em> and <em>court</em> in the legal sentence, <em>credit</em> and <em>statement</em> in the financial one, <em>built</em> and <em>sparked</em> in the electrical, <em>cavalry</em> and <em>broke</em> in the physical. Nothing in training told the model these words go together. It learned the groupings from reading a lot of text.</li>
-        <li><strong>One starting point, four destinations.</strong> The gray dot is <em>charge</em>'s static embedding &mdash; the fixed input for all four sentences, before any layer processes it. After all six transformer layers run, <em>charge</em>'s vector has been pulled toward a different region of space in each context. Same word in, four different vectors out, each shaped by what the model attended to along the way.</li>
-        <li><strong>About the filter on the attention view.</strong> We're showing the first layer's attention, averaged across all 12 heads, with special tokens (<code>[CLS]</code>, <code>[SEP]</code>) and punctuation excluded. At deeper layers, <code>charge</code>'s attention concentrates heavily on <code>[SEP]</code> &mdash; a known &ldquo;attention sink&rdquo; effect where tokens that don't have anywhere informative to look park their weight on a special token instead (Xiao et al., <a href="https://arxiv.org/abs/2309.17453" target="_blank" rel="noopener">&ldquo;Efficient Streaming Language Models with Attention Sinks&rdquo;</a>, 2023). Filtering at the first layer keeps the disambiguation signal visible; the raw, unfiltered weights are in the source data if you want to verify.</li>
-        <li><strong>What this does and doesn't claim.</strong> The mechanism here &mdash; same word, different context, different vector &mdash; is a plain, verifiable fact about real DistilBERT weights. Whether the model <em>understands</em> any of these four meanings in a human sense is a separate and much harder question; we're showing how the math differentiates them, not making a claim about comprehension.</li>
-      </ul>
-    </div>
+  </section>
+
+  <section class="chapter" id="chapter-conclusion">
+    <h2>That's the basics.</h2>
+    <p class="lede">
+      This is the core of how a modern LLM works. The loop &mdash; <strong>tokenization &rarr; embedding &rarr; transformer &rarr; output</strong> &mdash; runs once for every token you type into an LLM, and once more for every token it writes back. A conversation is just thousands of repetitions of that same small cycle.
+    </p>
   </section>
 
   <!-- END PART 2 -->
