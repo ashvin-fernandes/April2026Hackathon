@@ -967,156 +967,6 @@
     text-align: center;
   }
 
-  /* --- Chapter 4: Attention heatmap --- */
-
-  .attention-demo {
-    background: var(--bg-panel);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 32px;
-    box-shadow: var(--panel-shadow);
-    transition: background-color 200ms ease, border-color 200ms ease;
-  }
-
-  .attention-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin-bottom: 22px;
-  }
-
-  .attention-title {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    padding-top: 3px;
-  }
-
-  .attention-meta {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 12px;
-    color: var(--ink-soft);
-    text-align: right;
-    line-height: 1.6;
-  }
-
-  .attention-meta .meta-label {
-    color: var(--ink-faint);
-  }
-
-  .attention-viz-wrap {
-    width: 100%;
-    background: var(--bg-subtle);
-    border-radius: 8px;
-    padding: 18px;
-    overflow: hidden;
-  }
-
-  .attention-svg {
-    width: 100%;
-    height: auto;
-    display: block;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-  }
-
-  .attn-cell {
-    stroke: var(--bg-panel);
-    stroke-width: 0.04;
-    transition: opacity 180ms ease;
-    opacity: 0;
-    animation: attn-cell-in 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    animation-delay: var(--delay, 0ms);
-  }
-
-  @keyframes attn-cell-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  .attn-label {
-    fill: var(--ink-soft);
-    font-size: 0.34px;
-    paint-order: stroke fill;
-    stroke: var(--bg-subtle);
-    stroke-width: 0.08;
-    stroke-linejoin: round;
-    transition: fill 180ms ease, font-weight 180ms ease;
-  }
-
-  .attn-label.axis-col {
-    text-anchor: start;
-    dominant-baseline: middle;
-  }
-
-  .attn-label.axis-row {
-    text-anchor: end;
-    dominant-baseline: middle;
-  }
-
-  .attn-corner {
-    fill: var(--ink-faint);
-    font-size: 0.28px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-  }
-
-  /* Row/col highlight: when hovering a row label, dim other rows. */
-  .attention-svg.has-hover .attn-cell {
-    opacity: 0.25;
-  }
-
-  .attention-svg.has-hover .attn-cell.is-row,
-  .attention-svg.has-hover .attn-cell.is-col {
-    opacity: 1;
-  }
-
-  .attention-svg .attn-label.is-active {
-    fill: var(--accent);
-    font-weight: 700;
-  }
-
-  .attn-rowcol-hit {
-    fill: transparent;
-    cursor: default;
-  }
-
-  .attention-scale {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 16px;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 11px;
-    color: var(--ink-faint);
-  }
-
-  .attention-scale-bar {
-    flex: 1;
-    height: 8px;
-    border-radius: 2px;
-    background: linear-gradient(90deg,
-      rgba(44, 90, 122, 0.04),
-      rgba(44, 90, 122, 1));
-    max-width: 260px;
-  }
-
-  :root[data-theme="dark"] .attention-scale-bar {
-    background: linear-gradient(90deg,
-      rgba(122, 184, 214, 0.05),
-      rgba(122, 184, 214, 1));
-  }
-
-  .attention-caption {
-    margin-top: 18px;
-    font-size: 13px;
-    color: var(--ink-faint);
-    line-height: 1.55;
-  }
-
   /* --- Chapter 4 (Part 1): Think-by-writing side-by-side --- */
 
   .ttb-split {
@@ -1831,10 +1681,23 @@
     </div>
   </section>
 
-  <section class="chapter-subsection" id="chapter-embeddings-context">
-    <h3>But in context, <em>charge</em> isn't one thing</h3>
+  <section class="chapter-subsection" id="chapter-transformers-intro">
+    <h3>Wait &mdash; what's a transformer?</h3>
     <p class="lede">
-      The map above is static &mdash; <em>charge</em> sits at one point in that space, always. But in real sentences, <em>charge</em> could be a legal charge, a credit-card charge, an electrical charge, or a cavalry charge, and the sentence around it is what decides. Turning that context into a different vector is the job of <em>attention</em> &mdash; the subject of the next chapter. Here's what it looks like, on real weights, for four sentences. <strong>Hover any sentence</strong> to isolate that sense and watch <em>charge</em>'s vector travel from its starting point to where attention carries it.
+      The map above is static: each word sits at one fixed point. But in practice, the same word means different things depending on what's around it &mdash; a legal <em>charge</em>, a credit-card <em>charge</em>, an electrical <em>charge</em>. Meaning isn't really a property of a word alone; it's a property of a word <em>in context</em>.
+    </p>
+    <p>
+      The thing that bridges those two facts is the <strong>transformer</strong> &mdash; the neural network architecture at the core of every modern chat LLM (GPT, Claude, Llama, Gemini, all of them). Its one job: take the sequence of static embedding vectors from above, and <em>reshape</em> each one based on its neighbors. After a transformer has done its work, <em>charge</em> in &ldquo;cavalry charge&rdquo; has moved to a different region of the space than <em>charge</em> in &ldquo;credit-card charge&rdquo; &mdash; even though both started at the same point on the map.
+    </p>
+    <p>
+      The mechanism that does this is called <strong>attention</strong>: for every token in a sentence, the model computes how much each other token matters, then blends those weighted influences back into the token's vector. Stack a dozen layers of attention, and you have a transformer (Vaswani et al., <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">&ldquo;Attention Is All You Need&rdquo;</a>, 2017). The demo below shows exactly that happening to the word <em>charge</em> across four different sentences.
+    </p>
+  </section>
+
+  <section class="chapter-subsection" id="chapter-embeddings-context">
+    <h3>Same word, four different places</h3>
+    <p class="lede">
+      Four sentences, four meanings for <em>charge</em>, run through a real transformer (DistilBERT). The static embedding for <em>charge</em> is the same each time &mdash; but after the transformer's layers run, the vector has ended up in four meaningfully different places. <strong>Hover any sentence</strong> to isolate that sense and watch <em>charge</em>'s vector travel from its starting point to where attention carries it.
     </p>
 
     <div class="charge-demo" id="charge-demo">
@@ -1869,52 +1732,12 @@
       <ul>
         <li><strong>Same word, different attention, different neighborhood.</strong> In each sentence, <code>charge</code>'s attention spreads across the content words and concentrates on the ones that disambiguate its meaning &mdash; <em>prosecutor</em> and <em>court</em> in the legal sentence, <em>credit</em> and <em>statement</em> in the financial one, <em>built</em> and <em>sparked</em> in the electrical, <em>cavalry</em> and <em>broke</em> in the physical. Nothing in training told the model these words go together. It learned the groupings from reading a lot of text.</li>
         <li><strong>One starting point, four destinations.</strong> The gray dot is <em>charge</em>'s static embedding &mdash; the fixed input for all four sentences, before any layer processes it. After all six transformer layers run, <em>charge</em>'s vector has been pulled toward a different region of space in each context. Same word in, four different vectors out, each shaped by what the model attended to along the way.</li>
-        <li><strong>About the filter on the attention view.</strong> We're showing the first layer's attention, averaged across all 12 heads, with special tokens (<code>[CLS]</code>, <code>[SEP]</code>) and punctuation excluded. At deeper layers, <code>charge</code>'s attention concentrates heavily on <code>[SEP]</code> &mdash; the "attention sink" phenomenon the next chapter shows and sources (Xiao et al., 2023). Filtering at the first layer keeps the disambiguation signal visible; the raw, unfiltered weights are in the source data if you want to verify.</li>
+        <li><strong>About the filter on the attention view.</strong> We're showing the first layer's attention, averaged across all 12 heads, with special tokens (<code>[CLS]</code>, <code>[SEP]</code>) and punctuation excluded. At deeper layers, <code>charge</code>'s attention concentrates heavily on <code>[SEP]</code> &mdash; a known &ldquo;attention sink&rdquo; effect where tokens that don't have anywhere informative to look park their weight on a special token instead (Xiao et al., <a href="https://arxiv.org/abs/2309.17453" target="_blank" rel="noopener">&ldquo;Efficient Streaming Language Models with Attention Sinks&rdquo;</a>, 2023). Filtering at the first layer keeps the disambiguation signal visible; the raw, unfiltered weights are in the source data if you want to verify.</li>
         <li><strong>What this does and doesn't claim.</strong> The mechanism here &mdash; same word, different context, different vector &mdash; is a plain, verifiable fact about real DistilBERT weights. Whether the model <em>understands</em> any of these four meanings in a human sense is a separate and much harder question; we're showing how the math differentiates them, not making a claim about comprehension.</li>
       </ul>
     </div>
   </section>
 
-  <section class="chapter" id="chapter-attention">
-    <div class="eyebrow">Chapter 3</div>
-    <h2>One word looking at another</h2>
-    <p class="lede">
-      If each token is a vector, the model still has to figure out which tokens should influence which. That's the job of <em>self-attention</em>: for every token in a sentence, the model computes how much to listen to every other token. Below is the real attention pattern from one head, in one layer, of a small open-source language model, reading a short sentence.
-    </p>
-
-    <div class="attention-demo" id="attention-demo">
-      <div class="attention-header">
-        <div class="attention-title">Attention weights &middot; 1 head &middot; 1 layer</div>
-        <div class="attention-meta">
-          <div><span class="meta-label">model</span> distilbert-base-uncased</div>
-          <div><span class="meta-label">layer</span> 3 of 6 &nbsp;<span class="meta-label">head</span> 0 of 12</div>
-        </div>
-      </div>
-      <div class="attention-viz-wrap">
-        <svg class="attention-svg" id="attention-svg" viewBox="0 0 16 16" preserveAspectRatio="xMidYMid meet"></svg>
-      </div>
-      <div class="attention-scale">
-        <span>0.0</span>
-        <span class="attention-scale-bar" aria-hidden="true"></span>
-        <span>1.0</span>
-        <span style="margin-left: 6px;">attention weight</span>
-      </div>
-      <div class="attention-caption">
-        Each row is one token asking "where should I look?" Darker cells = more attention. Every row sums to 1.0 across the columns, because attention is a probability distribution over the other tokens. Hover a token label to isolate its row or column.
-      </div>
-    </div>
-
-    <div class="annotations">
-      <p>A few things this visualization earns, and a few things it does not:</p>
-      <ul>
-        <li><strong>Attention is a weighted average, not a pick.</strong> Each row distributes some weight to every token in the sentence (including itself) and those weights add up to 1. The model then takes a weighted mix of the other tokens' vectors and folds it back into the current token's representation. That's the core move in self-attention (Vaswani et al., <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">&ldquo;Attention Is All You Need&rdquo;</a>, 2017).</li>
-        <li><strong>That dark column on the right is real, and a little embarrassing.</strong> Most rows dump a lot of their attention onto <code>[SEP]</code>, the end-of-sentence marker. This is a known phenomenon called an <em>attention sink</em>: when a token doesn't have anywhere particularly informative to look, it parks its attention on a special token instead (Xiao et al., <a href="https://arxiv.org/abs/2309.17453" target="_blank" rel="noopener">&ldquo;Efficient Streaming Language Models with Attention Sinks&rdquo;</a>, 2023). It's a good reminder that not every row is doing linguistic work &mdash; some heads are mostly passing.</li>
-        <li><strong>Some signal does survive the sink.</strong> In this particular head, <code>was</code> puts noticeable weight on <code>ruled</code>, and <code>invalid</code> also looks back at <code>ruled</code> &mdash; plausible, since those three words form the verb-phrase backbone of the sentence. We're not claiming this head "learned grammar." We are claiming: real weights, real pattern, look for yourself.</li>
-        <li><strong>Heads specialize, sort of.</strong> Different attention heads in a trained transformer often end up doing different jobs &mdash; some track previous-token relationships, some copy from earlier occurrences, some do nothing obvious. Anthropic's interpretability group has taken this apart in detail; the foundational writeup is <a href="https://transformer-circuits.pub/2021/framework/index.html" target="_blank" rel="noopener">&ldquo;A Mathematical Framework for Transformer Circuits&rdquo;</a> (Elhage et al., 2021), with the <a href="https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html" target="_blank" rel="noopener">induction-heads</a> follow-up (Olsson et al., 2022) showing specific heads that implement a specific, interpretable algorithm. Worth stressing: "heads specialize" is a well-supported tendency, not a universal law.</li>
-        <li><strong>This is not &ldquo;how transformers work.&rdquo;</strong> This is one head, at one layer, for one sentence, in a small encoder-only model. A real transformer stacks dozens of layers, each with many heads in parallel, interleaved with feed-forward layers, residual connections, and layer norms. Attention is the part that moves information between tokens; the rest of the machinery is what actually processes it. For a gentler end-to-end tour with pictures, Jay Alammar's <a href="https://jalammar.github.io/illustrated-transformer/" target="_blank" rel="noopener">&ldquo;The Illustrated Transformer&rdquo;</a> is the standard recommendation.</li>
-      </ul>
-    </div>
-  </section>
   <!-- END PART 2 -->
 </div>
 
@@ -2209,187 +2032,6 @@
       item.addEventListener('mouseenter', () => demo.setAttribute('data-focus', item.dataset.cat));
       item.addEventListener('mouseleave', () => demo.removeAttribute('data-focus'));
     });
-  })();
-
-  // --- Chapter 4: attention heatmap ---
-  // Real attention weights from distilbert-base-uncased, layer 3 head 0,
-  // for the sentence "The judge ruled the contract was invalid."
-  // Produced by scripts/build_attention.py. Rows sum to 1.0.
-  const ATTENTION_DATA = {
-    "tokens": ["[CLS]", "the", "judge", "ruled", "the", "contract", "was", "invalid", ".", "[SEP]"],
-    "attention": [
-      [0.0039, 0.0177, 0.0165, 0.0322, 0.0072, 0.0018, 0.0082, 0.0052, 0.0703, 0.8369],
-      [0.0545, 0.0396, 0.0277, 0.0165, 0.0081, 0.0042, 0.0050, 0.0078, 0.1295, 0.7072],
-      [0.0574, 0.0662, 0.0368, 0.0247, 0.0087, 0.0035, 0.0020, 0.0062, 0.0434, 0.7511],
-      [0.0633, 0.1733, 0.0954, 0.0353, 0.0077, 0.0060, 0.0063, 0.0155, 0.0664, 0.5307],
-      [0.1353, 0.1903, 0.0692, 0.0693, 0.0564, 0.0102, 0.0221, 0.0254, 0.0606, 0.3612],
-      [0.0623, 0.0706, 0.0379, 0.0429, 0.0636, 0.0139, 0.0248, 0.0137, 0.0247, 0.6456],
-      [0.0598, 0.0521, 0.0666, 0.3491, 0.1368, 0.0240, 0.0307, 0.0451, 0.0407, 0.1951],
-      [0.0708, 0.0261, 0.0502, 0.1685, 0.0460, 0.0223, 0.0418, 0.0372, 0.0832, 0.4540],
-      [0.0133, 0.0546, 0.0518, 0.1987, 0.0304, 0.0064, 0.0386, 0.0374, 0.0900, 0.4788],
-      [0.0043, 0.0023, 0.0018, 0.0064, 0.0018, 0.0011, 0.0033, 0.0017, 0.0311, 0.9462],
-    ],
-  };
-
-  (function renderAttentionHeatmap() {
-    const svg = document.getElementById('attention-svg');
-    if (!svg) return;
-    const NS = 'http://www.w3.org/2000/svg';
-
-    const tokens = ATTENTION_DATA.tokens;
-    const attn = ATTENTION_DATA.attention;
-    const N = tokens.length;
-
-    // Layout inside a 16x16 viewBox:
-    //   left/top margins leave room for labels; the remainder is the grid.
-    const margin = { top: 3.2, left: 3.2, right: 0.3, bottom: 0.3 };
-    const gridSize = 16 - margin.left - margin.right;   // 12.5
-    const cell = gridSize / N;                          // 1.25 for 10 tokens
-
-    // Clean up display tokens: drop the leading "##" from WordPiece continuations
-    // if any show up (none here for this sentence, but harmless to guard).
-    const display = tokens.map(t => t.startsWith('##') ? t.slice(2) : t);
-
-    // Find max weight for color scaling (excluding self-cells is not needed;
-    // we just use the overall max so the darkest cell maps to the darkest shade).
-    let maxW = 0;
-    for (const row of attn) for (const v of row) if (v > maxW) maxW = v;
-
-    // Color ramp: we interpolate the accent color's alpha from near-0 to 1.
-    // Using the CSS accent var for both light+dark themes means the heatmap
-    // retells itself when the user toggles themes.
-    //
-    // We use gamma < 1 so small-but-nonzero weights are still visible.
-    function alpha(w) {
-      const n = Math.min(1, w / maxW);
-      return Math.pow(n, 0.55);     // ease-out: bring up the mid-lows
-    }
-
-    // Grid group, behind labels.
-    const gridG = document.createElementNS(NS, 'g');
-    gridG.setAttribute('class', 'attn-grid');
-    svg.appendChild(gridG);
-
-    // Get the accent color once; re-read on theme change for repaint.
-    function currentAccent() {
-      return getComputedStyle(document.documentElement)
-        .getPropertyValue('--accent').trim() || '#2c5a7a';
-    }
-
-    let accent = currentAccent();
-
-    const cells = [];
-    for (let i = 0; i < N; i++) {
-      for (let j = 0; j < N; j++) {
-        const w = attn[i][j];
-        const x = margin.left + j * cell;
-        const y = margin.top + i * cell;
-        const rect = document.createElementNS(NS, 'rect');
-        rect.setAttribute('class', 'attn-cell');
-        rect.setAttribute('x', x);
-        rect.setAttribute('y', y);
-        rect.setAttribute('width', cell);
-        rect.setAttribute('height', cell);
-        rect.setAttribute('data-row', i);
-        rect.setAttribute('data-col', j);
-        rect.setAttribute('fill', accent);
-        rect.setAttribute('fill-opacity', alpha(w).toFixed(3));
-        // Stagger animation diagonally for a subtle reveal.
-        rect.style.setProperty('--delay', (200 + (i + j) * 35) + 'ms');
-        // Title for native tooltip on hover (accessible fallback).
-        const title = document.createElementNS(NS, 'title');
-        title.textContent = `${display[i]} -> ${display[j]}: ${w.toFixed(3)}`;
-        rect.appendChild(title);
-        gridG.appendChild(rect);
-        cells.push(rect);
-      }
-    }
-
-    // Row labels (left side), column labels (top, rotated).
-    const labelG = document.createElementNS(NS, 'g');
-    labelG.setAttribute('class', 'attn-labels');
-    svg.appendChild(labelG);
-
-    // Corner caption: "to" axis on columns, "from" axis on rows.
-    const corner = document.createElementNS(NS, 'text');
-    corner.setAttribute('class', 'attn-corner');
-    corner.setAttribute('x', margin.left - 0.2);
-    corner.setAttribute('y', margin.top - 2.2);
-    corner.setAttribute('text-anchor', 'end');
-    corner.textContent = 'attends to →';
-    labelG.appendChild(corner);
-
-    const fromLabel = document.createElementNS(NS, 'text');
-    fromLabel.setAttribute('class', 'attn-corner');
-    fromLabel.setAttribute('transform',
-      `translate(${margin.left - 2.6}, ${margin.top + gridSize / 2}) rotate(-90)`);
-    fromLabel.setAttribute('text-anchor', 'middle');
-    fromLabel.textContent = '← from';
-    labelG.appendChild(fromLabel);
-
-    for (let i = 0; i < N; i++) {
-      // Row labels on the left.
-      const row = document.createElementNS(NS, 'text');
-      row.setAttribute('class', 'attn-label axis-row');
-      row.setAttribute('x', margin.left - 0.25);
-      row.setAttribute('y', margin.top + (i + 0.5) * cell);
-      row.setAttribute('data-row', i);
-      row.textContent = display[i];
-      labelG.appendChild(row);
-
-      // Col labels on top, rotated -45 degrees.
-      const col = document.createElementNS(NS, 'text');
-      col.setAttribute('class', 'attn-label axis-col');
-      const cx = margin.left + (i + 0.5) * cell;
-      const cy = margin.top - 0.25;
-      col.setAttribute('transform', `translate(${cx}, ${cy}) rotate(-45)`);
-      col.setAttribute('data-col', i);
-      col.textContent = display[i];
-      labelG.appendChild(col);
-    }
-
-    // Hover: hovering a row label highlights that row; hovering a col label
-    // highlights that column. Hovering a cell does nothing special (native
-    // tooltip already shows the value).
-    function setRowHover(i, on) {
-      svg.classList.toggle('has-hover', on);
-      cells.forEach(c => {
-        c.classList.toggle('is-row', on && Number(c.getAttribute('data-row')) === i);
-      });
-      labelG.querySelectorAll('.axis-row').forEach(l => {
-        l.classList.toggle('is-active', on && Number(l.getAttribute('data-row')) === i);
-      });
-    }
-    function setColHover(j, on) {
-      svg.classList.toggle('has-hover', on);
-      cells.forEach(c => {
-        c.classList.toggle('is-col', on && Number(c.getAttribute('data-col')) === j);
-      });
-      labelG.querySelectorAll('.axis-col').forEach(l => {
-        l.classList.toggle('is-active', on && Number(l.getAttribute('data-col')) === j);
-      });
-    }
-
-    labelG.addEventListener('mouseover', (e) => {
-      const row = e.target.closest('.axis-row');
-      const col = e.target.closest('.axis-col');
-      if (row) setRowHover(Number(row.getAttribute('data-row')), true);
-      if (col) setColHover(Number(col.getAttribute('data-col')), true);
-    });
-    labelG.addEventListener('mouseout', (e) => {
-      const row = e.target.closest('.axis-row');
-      const col = e.target.closest('.axis-col');
-      if (row) setRowHover(Number(row.getAttribute('data-row')), false);
-      if (col) setColHover(Number(col.getAttribute('data-col')), false);
-    });
-
-    // Repaint cells when the theme toggles (accent var changes).
-    const repaint = () => {
-      accent = currentAccent();
-      cells.forEach(c => c.setAttribute('fill', accent));
-    };
-    const obs = new MutationObserver(repaint);
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   })();
 
   // --- Chapter 1 autoregressive demo ---
