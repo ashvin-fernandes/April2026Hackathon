@@ -1208,9 +1208,9 @@
 
   <section class="chapter" id="chapter-think-by-writing">
     <div class="eyebrow">Chapter 2</div>
-    <h2>LLMs think by writing.</h2>
+    <h2>Why do LLMs hallucinate?</h2>
     <p class="lede">
-      An important insight here is that LLMs do not think or reason before they write, the writing IS the reasoning. This means that forcing an LLM to use fewer words can hurt its performance, and conversely letting it write more can improve their performance.
+      An important insight here is that LLMs do not think or reason before they write, the writing IS the reasoning. This means that forcing an LLM to use fewer words can hurt its performance, and conversely letting it write more can improve its performance.
     </p>
 
     <div class="demo">
@@ -1249,7 +1249,7 @@
     </div>
 
     <div class="annotations">
-
+      <ul>
         <li>Math is normally trivial for computers, but LLMs can run into issues. For simple math problems using common numbers, LLMs will usually get the answer right. Those problems are part of the LLMs' training data, so the model will be strongly pointed towards the right answer. </li>
         <li>But for uncommon equations like the one above, the LLM is just doing its best to get to an answer that seems plausible. This is what's scary about AI halllucinations. The answers they give seem correct, because they've been heavily trained to look correct! </li>
         <li>You may have seen some LLMs with a <em>thinking</em> section before they give out their final output. This is partially marketing, but as seen above, giving the LLM additional tokens to reason with can improve performance. However, those thinking tokens are not a special internal part of the AI, they're exactly the same as the tokens in the final output. Other models may still be doing this "thinking" but not showing it to you in the output.</li>
@@ -1262,13 +1262,9 @@
         <sup>3</sup> Anthropic, <em>Building with extended thinking</em> (Claude docs): <a href="https://platform.claude.com/docs/en/docs/build-with-claude/extended-thinking" style="color: var(--accent);">platform.claude.com</a>.
       </p>
     </div>
-  </section>
 
-  <section class="chapter" id="chapter-hallucinations">
-    <div class="eyebrow">Chapter 3</div>
-    <h2>Hallucinations aren't bugs. They're the mechanism.</h2>
     <p class="lede">
-      If the whole job is predicting a plausible next token (Chapter 1), what happens when plausible and true come apart? The model keeps predicting. It has no separate "do I actually know this?" check wired in by default — so when the training data doesn't contain the real answer, it confidently produces something that <em>looks</em> like one. In 2023, a New York lawyer learned this the expensive way.
+      LLMs function by providing a <em>plausible</em> next token, but what looking plausible is not the same as being true. Take the case of Roberto Mata v. Avianca Inc. in which a lawyer generated false cases. 
     </p>
 
     <div class="demo">
@@ -1283,13 +1279,11 @@
       </div>
 
       <div class="annotations">
-        <p><strong>None of this exists.</strong> The case is fabricated. So is the quote. So is the holding. The citation format is correct — volume, reporter, court, year are all in the right shape a real citation would take — but there is no <em>Varghese v. China Southern Airlines</em> in the Federal Reporter, or anywhere else. The model produced a plausible-looking citation because that's what "a citation on tolling under the Montreal Convention" <em>looks like</em> statistically. It was never checking whether the case existed; nothing in the next-token loop asks that question.</p>
+        <p><strong>None of this exists.</strong> The case was entirely made up by ChatGPT to sound like something that could exist, without actually checking for a source. The lawyers that were responsible for submitting this case were fined $500 and ordered to notify each judge that they improperly cited. 
       </div>
     </div>
 
     <div class="annotations">
-      <p>The prompt above is a reconstruction of what happened in <em>Mata v. Avianca, Inc.</em>, 678 F. Supp. 3d 443 (S.D.N.Y. 2023). Attorney Steven Schwartz used ChatGPT to research a brief opposing a motion to dismiss, and filed it containing six fabricated opinions — <em>Varghese</em>, <em>Shaboon</em>, <em>Petersen</em>, <em>Martinez</em>, <em>Durden</em>, and <em>Miller</em>. When opposing counsel and Judge P. Kevin Castel couldn't find the cases, Schwartz went back to ChatGPT and asked if they were real. ChatGPT said yes. He filed <em>that</em> too. On June 22, 2023, the court sanctioned Schwartz, his colleague Peter LoDuca, and their firm Levidow, Levidow &amp; Oberman $5,000 and ordered them to notify each judge whose name had been forged onto a fake opinion.<sup>1</sup></p>
-
       <p>Why does this happen? A few things to hold together:</p>
       <ul>
         <li><strong>The training objective rewards plausibility, not truth.</strong> OpenAI's own write-up on the topic puts it bluntly: "standard training and evaluation procedures reward guessing over acknowledging uncertainty." A model that says "I don't know" gets penalized on benchmarks that score only correct answers; a model that guesses confidently sometimes gets it right and is never worse off for bluffing.<sup>2</sup></li>
