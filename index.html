@@ -1478,7 +1478,7 @@
       </div>
 
       <div class="annotations">
-        <p><strong>None of this exists.</strong> The case was entirely made up by ChatGPT to sound like something that could exist, without actually checking for a source. The lawyers that were responsible for submitting this case were fined $5,000 and ordered to notify each judge that they improperly cited.</p>
+        <p><strong>None of this exists.</strong> The case was entirely made up by ChatGPT to sound like something that could exist, without actually checking for a source. The lawyers that were responsible for submitting this case were fined $5,000 and ordered to notify each judge that they improperly cited (see <a href="https://www.nytimes.com/2023/05/27/nyregion/avianca-airline-lawsuit-chatgpt.html" target="_blank" rel="noopener">NYT coverage</a>).</p>
       </div>
     </div>
 
@@ -1655,7 +1655,7 @@
     <div class="eyebrow">Chapter 2</div>
     <h2>Embeddings</h2>
     <p class="lede">
-      For every token, the LLM has a corresponding vector (a list of numbers). These are called the model's embeddings. These embeddings are created during the model's initial training, and don't change afterwards. Each number in the embedding means nothing by itself, but embeddings define the relationship that each token has with other tokens. Think of the embeddings as defining a point in space. Tokens that appear in similar contexts are usually found near each other. What's interesting is that we can find meaning by adding or subtracting the embeddings from each other. For example, if you take the embedding for King, subtract the embedding for Man, and add the embedding for Woman, you'll get close to the token for Queen.
+      For every token, the LLM has a corresponding vector (a list of numbers). These are called the model's embeddings. These embeddings are created during the model's initial training, and don't change afterwards. Each number in the embedding means nothing by itself, but embeddings define the relationship that each token has with other tokens. Think of the embeddings as defining a point in space. Tokens that appear in similar contexts are usually found near each other. What's interesting is that we can find meaning by adding or subtracting the embeddings from each other. For example, if you take the embedding for King, subtract the embedding for Man, and add the embedding for Woman, you'll get close to the token for Queen (see <a href="https://jalammar.github.io/illustrated-word2vec/" target="_blank" rel="noopener">The Illustrated Word2vec</a> by Jay Alammar).
 
       The example below represents tokens in two dimensions, but real LLMs have many many dimensions that define relationships.
     </p>
