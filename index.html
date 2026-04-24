@@ -1193,7 +1193,7 @@
 
       <div id="ar-bars" class="bars"></div>
 
-      <div class="ar-note" id="ar-note">Click step to generate a new token. In each step, the most likely next token changes depending on the existing tokens present (the context.) </div>
+      <div class="ar-note" id="ar-note">Click step to generate a new token. In each step, the most likely next token changes depending on the existing tokens present (the context). </div>
 
       <div class="ar-controls">
         <button id="ar-back" class="ar-btn">← Step back</button>
@@ -1251,7 +1251,7 @@
     <div class="annotations">
       <ul>
         <li>Math is normally trivial for computers, but LLMs can run into issues. For simple math problems using common numbers, LLMs will usually get the answer right. Those problems are part of the LLMs' training data, so the model will be strongly pointed towards the right answer. </li>
-        <li>But for uncommon equations like the one above, the LLM is just doing its best to get to an answer that seems plausible. This is what's scary about AI halllucinations. The answers they give seem correct, because they've been heavily trained to look correct! </li>
+        <li>But for uncommon equations like the one above, the LLM is just doing its best to get to an answer that seems plausible. This is what's scary about AI hallucinations. The answers they give seem correct, because they've been heavily trained to look correct! </li>
         <li>You may have seen some LLMs with a <em>thinking</em> section before they give out their final output. This is partially marketing, but as seen above, giving the LLM additional tokens to reason with can improve performance. However, those thinking tokens are not a special internal part of the AI, they're exactly the same as the tokens in the final output. Other models may still be doing this "thinking" but not showing it to you in the output.</li>
         <li>In this particular case, it's probably best just to ask the AI to use a calculator tool, or write a short script to get the answer.</li>
       </ul>
@@ -1264,7 +1264,7 @@
     </div>
 
     <p class="lede">
-      LLMs function by providing a <em>plausible</em> next token, but what looking plausible is not the same as being true. Take the case of Roberto Mata v. Avianca Inc. in which a lawyer generated false cases. 
+      LLMs function by providing a <em>plausible</em> next token, but looking plausible is not the same as being true. Take the case of Roberto Mata v. Avianca, Inc., in which a lawyer generated false cases. 
     </p>
 
     <div class="demo">
@@ -1279,65 +1279,37 @@
       </div>
 
       <div class="annotations">
-        <p><strong>None of this exists.</strong> The case was entirely made up by ChatGPT to sound like something that could exist, without actually checking for a source. The lawyers that were responsible for submitting this case were fined $500 and ordered to notify each judge that they improperly cited. 
+        <p><strong>None of this exists.</strong> The case was entirely made up by ChatGPT to sound like something that could exist, without actually checking for a source. The lawyers that were responsible for submitting this case were fined $5,000 and ordered to notify each judge that they improperly cited.</p>
       </div>
     </div>
 
-    <div class="annotations">
-      <p>Why does this happen? A few things to hold together:</p>
-      <ul>
-        <li><strong>The training objective rewards plausibility, not truth.</strong> OpenAI's own write-up on the topic puts it bluntly: "standard training and evaluation procedures reward guessing over acknowledging uncertainty." A model that says "I don't know" gets penalized on benchmarks that score only correct answers; a model that guesses confidently sometimes gets it right and is never worse off for bluffing.<sup>2</sup></li>
-        <li><strong>"Plausible citation" is a pattern the model learned very well.</strong> Legal reporters, volume numbers, court abbreviations, and pincites all follow strong regularities. Predicting tokens that fit that shape is <em>easy</em>. Predicting tokens that correspond to a real case that actually supports your argument is a completely different problem — one the model wasn't separately trained to solve.</li>
-        <li><strong>There is no default "I don't know" circuit — it has to be trained in.</strong> Anthropic's interpretability team has traced this inside Claude: the model has a default-on "can't answer" circuit that gets <em>suppressed</em> when a competing "known entity" feature fires. Ask about Michael Jordan, the known-entity feature fires, the refusal circuit shuts off, and the model answers. The researchers were able to induce hallucinations by artificially firing the known-entity feature for a made-up name — the model then confidently produced a biography for someone who doesn't exist. Hallucinations, on this view, are what happens when the known-entity signal misfires on something the model doesn't actually know.<sup>3</sup></li>
-        <li><strong>So what stops it?</strong> Post-training (RLHF, constitutional AI, etc.) teaches models to say "I don't know" more often, and tools like retrieval and citation-verification let the model check external sources before answering. Both help. Neither eliminates the underlying issue, because the underlying issue isn't a bug — it's the base mechanism showing through.</li>
-      </ul>
-
-      <p style="margin-top: 24px; font-size: 13px; color: var(--ink-faint);">
-        <sup>1</sup> <em>Mata v. Avianca, Inc.</em>, 678 F. Supp. 3d 443 (S.D.N.Y. 2023). Opinion and order on sanctions: <a href="https://law.justia.com/cases/federal/district-courts/new-york/nysdce/1:2022cv01461/575368/54/" style="color: var(--accent);">law.justia.com</a>. Background: <a href="https://en.wikipedia.org/wiki/Mata_v._Avianca,_Inc." style="color: var(--accent);">Wikipedia summary</a>.<br />
-        <sup>2</sup> OpenAI, <em>Why language models hallucinate</em> (Sept. 2025): <a href="https://openai.com/index/why-language-models-hallucinate/" style="color: var(--accent);">openai.com</a>.<br />
-        <sup>3</sup> Anthropic, <em>Tracing the thoughts of a large language model</em> (Mar. 2025): <a href="https://www.anthropic.com/research/tracing-thoughts-language-model" style="color: var(--accent);">anthropic.com</a>. Full paper, <em>On the Biology of a Large Language Model</em>: <a href="https://transformer-circuits.pub/2025/attribution-graphs/biology.html" style="color: var(--accent);">transformer-circuits.pub</a>. The "known entity" / default-refusal finding is one mechanism among several; the authors are explicit that it doesn't explain every hallucination.
-      </p>
-    </div>
   </section>
 
   <section class="chapter" id="chapter-why-work">
     <div class="eyebrow">Chapter 3</div>
     <h2>So why does this actually work?</h2>
     <p class="lede">
-      Fair question at this point. If an LLM is just predicting the next plausible token — with no truth-check, no "understanding" in any human sense — how is it ever useful? And yet: clearly it is. You've probably used one today to draft an email, summarize a document, or debug something that would have taken an hour otherwise. How does "just prediction" get you there?
+      If an LLM is "just" predicting the next token without any underlying understanding, why is it so accurate so often?
     </p>
-
-    <div class="annotations">
-      <p>Three things to hold together:</p>
-      <ul>
-        <li><strong>Most of what humans do with language is already in the training data.</strong> An LLM trained on trillions of tokens has effectively "read" most of Wikipedia, vast swaths of Stack Overflow, legal opinions, news archives, textbooks, and reference material. When you ask it what a contract indemnification clause looks like, the shape of that clause is deeply encoded — because thousands of real ones are already in its training set. For the majority of questions you'd actually ask, <em>plausible</em> and <em>correct</em> overlap almost entirely. The hallucinations from the last chapter are the <em>edges</em> — rare citations, obscure facts, things the training data didn't cover — where the two come apart.</li>
-        <li><strong>Getting really good at prediction seems to require modeling the world.</strong> To reliably predict what comes next in a physics paragraph, you have to represent physics. To predict what comes next in legal writing, you have to represent how legal arguments are structured. Whether this counts as "understanding" in any deep sense is philosophically contested — serious researchers disagree, and the honest answer is nobody really knows. What's clearer empirically is that the internal representations a trained LLM builds encode something functionally useful enough to <em>look</em> a lot like it.</li>
-        <li><strong>Scale matters more than anyone expected.</strong> The same architecture trained on ten times more data and ten times more compute doesn't just get incrementally better — at certain thresholds, it unlocks capabilities the smaller version simply didn't have: multi-step arithmetic, instruction-following, writing working code, translating between languages it wasn't explicitly trained on. The phenomenon has a name — <em>emergent abilities</em><sup>1</sup> — and it's one of the surprising empirical findings of the last few years.</li>
-      </ul>
-
-      <p>The short answer: when "plausible text" is "text that had to be predicted accurately enough to survive training on trillions of human-produced examples," <em>plausible</em> starts looking a lot like <em>correct</em> — for most things, most of the time.</p>
-
-      <p>The long answer is the rest of this site. So far we've only looked at the <em>output</em> of the prediction loop — what the model produces, and why it sometimes goes wrong. <strong>Part 2 opens the box.</strong> We'll look at how text actually enters the model (tokens), how the model represents meaning (as vectors in high-dimensional space), and how tokens learn to pay attention to other tokens (attention). That's where "just prediction" starts to look less skeptical.</p>
-
-      <p style="margin-top: 24px; font-size: 13px; color: var(--ink-faint);">
-        <sup>1</sup> Wei et al., <em>Emergent Abilities of Large Language Models</em> (TMLR 2022): <a href="https://arxiv.org/abs/2206.07682" style="color: var(--accent);">arxiv.org/abs/2206.07682</a>. The "emergent" framing is itself contested — Schaeffer et al. 2023 argue that what looks like a sudden jump in capability is sometimes an artifact of how researchers choose to measure it (<a href="https://arxiv.org/abs/2304.15004" style="color: var(--accent);">arxiv.org/abs/2304.15004</a>). Either way, the empirical pattern — that bigger models behave qualitatively differently, not just quantitatively — holds.
-      </p>
-    </div>
+    <p>
+      The short answer is that LLMs have a LOT of training data, and that "plausible" has a lot of overlap with "true". When asked to answer a math question, the LLM has tons of math data that it looks at to point it in the right direction. When asked to find a specific case, it has huge amounts of legal data that it can look at in order to find what you're looking for.
+    </p>
+    <p>
+      The long answer is in the rest of this page.
+    </p>
   </section>
   <!-- END PART 1 -->
 
   <!-- BEGIN PART 2: The inner workings of an LLM -->
   <section class="part-header" id="part-2">
     <div class="part-number">Part Two</div>
-    <h2 class="part-title">The inner workings of an LLM</h2>
-    <p class="part-intro">Inside the model, tokens become vectors and meaning becomes geometry. A look at what actually happens between the input the model reads and the output it returns.</p>
   </section>
 
   <section class="chapter part-opener" id="chapter-tokens">
     <div class="eyebrow">Chapter 1</div>
     <h2>Wait, what is a token?</h2>
     <p class="lede">
-      We've been throwing the word "tokens" around. Time to stop. Before a model can read any text, that text gets chopped into small pieces called <em>tokens</em>, and every token becomes a number. Everything the model actually does, it does on numbers. Here's the round-trip for a simple legal question.
+     Before an LLM can read text, that text gets chopped into small pieces called <em>tokens</em>. To make it easier for the computer to work with, every token then becomes a number.
     </p>
 
     <div class="token-demo">
@@ -1351,7 +1323,7 @@
         <div class="pipe-arrow">↓ tokenize + encode</div>
 
         <div class="pipe-stage">
-          <div class="pipe-stage-label">6 tokens · each is really a number</div>
+          <div class="pipe-stage-label">6 tokens · each gets translated to a number</div>
           <div class="tokens-with-ids">
             <div class="token-cell"><span class="tok c1">What</span><span class="tok-id">3923</span></div>
             <div class="token-cell"><span class="tok c2"><span class="space-dot">·</span>is</span><span class="tok-id">374</span></div>
@@ -1369,7 +1341,7 @@
             <div class="model-box-label">Neural network</div>
             <div class="model-box-body">
               Billions of parameters crunch the input numbers and emit a sequence of output numbers that (hopefully) make sense as a reply.
-              <span class="model-box-footnote">We'll unpack what's in this box in a later chapter.</span>
+              <span class="model-box-footnote">We'll explain what happens here in a bit.</span>
             </div>
           </div>
         </div>
@@ -1377,7 +1349,7 @@
         <div class="pipe-arrow">↓ numbers come back out</div>
 
         <div class="pipe-stage">
-          <div class="pipe-stage-label">12 tokens · each was a number</div>
+          <div class="pipe-stage-label">12 tokens</div>
           <div class="tokens-with-ids">
             <div class="token-cell"><span class="tok c1">Jur</span><span class="tok-id">94277</span></div>
             <div class="token-cell"><span class="tok c2">is</span><span class="tok-id">285</span></div>
@@ -1407,10 +1379,9 @@
     <div class="annotations">
       <p>A few things worth noticing:</p>
       <ul>
-        <li><strong>"Jurisprudence" splits — twice, differently.</strong> In the input (lowercase, with a leading space) it becomes three tokens: <code>·juris</code>, <code>pr</code>, <code>udence</code>. In the output (capital J, no leading space, sentence-start) it becomes <em>four</em>: <code>Jur</code>, <code>is</code>, <code>pr</code>, <code>udence</code>. Capitalization and position change the split.</li>
+        <li><strong>"Jurisprudence" splits into multiple tokens.</strong> Uncommon words tend to use multiple tokens. In the input (lowercase, with a leading space) it becomes three tokens: <code>·juris</code>, <code>pr</code>, <code>udence</code>. In the output (capital J, no leading space, sentence-start) it becomes <em>four</em>: <code>Jur</code>, <code>is</code>, <code>pr</code>, <code>udence</code>. Capitalization and position change the split.</li>
         <li><strong>Tokens reuse numeric IDs across contexts.</strong> <code>pr</code> is token <code>652</code> both times it appears. <code>udence</code> is <code>74193</code>. <code>·is</code> (with leading space) is <code>374</code>. The vocabulary is fixed once during training — same word-pieces, same numbers, wherever they show up.</li>
         <li><strong>The model never actually sees English.</strong> Only numbers. Whatever it "knows" about grammar, meaning, or legal theory is computed from operations on these token IDs.</li>
-        <li><strong>Callback to Chapter 1:</strong> the probability distribution on the bar chart? That's over all ~100,000 of these numbers. The model doesn't pick the next <em>word</em> — it picks the next <em>number</em>, and we decode it on the way back out.</li>
       </ul>
     </div>
   </section>
