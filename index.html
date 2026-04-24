@@ -1093,10 +1093,6 @@
     color: var(--bg-panel);
   }
 
-  .ar-btn-ghost {
-    background: transparent;
-  }
-
   .ar-btn:disabled {
     opacity: 0.35;
     cursor: not-allowed;
@@ -1200,9 +1196,8 @@
       <div class="ar-note" id="ar-note">Click step to generate a new token. In each step, the most likely next token changes depending on the existing tokens present (the context.) </div>
 
       <div class="ar-controls">
-        <button id="ar-play" class="ar-btn ar-btn-primary">▶ Play</button>
-        <button id="ar-step" class="ar-btn">Step →</button>
-        <button id="ar-reset" class="ar-btn ar-btn-ghost">↺ Reset</button>
+        <button id="ar-back" class="ar-btn">← Step back</button>
+        <button id="ar-step" class="ar-btn ar-btn-primary">Step forward →</button>
       </div>
     </div>
 
@@ -2049,13 +2044,11 @@
     const genEl = document.getElementById('ar-generated');
     const noteEl = document.getElementById('ar-note');
     const stepNumEl = document.getElementById('ar-step-num');
-    const playBtn = document.getElementById('ar-play');
+    const backBtn = document.getElementById('ar-back');
     const stepBtn = document.getElementById('ar-step');
-    const resetBtn = document.getElementById('ar-reset');
-    if (!barsEl || !playBtn) return;
+    if (!barsEl || !stepBtn) return;
 
-    const state = { step: 0, playing: false, timer: null };
-    const INTERVAL_MS = 1400;
+    const state = { step: 0 };
 
     function formatToken(tok) {
       if (tok.startsWith(' ')) return `<span class="space-dot">·</span>${escapeHtml(tok.slice(1))}`;
@@ -2107,17 +2100,8 @@
     }
 
     function updateControls() {
-      if (state.playing) {
-        playBtn.textContent = '❚❚ Pause';
-      } else if (state.step >= AR_STEPS.length) {
-        playBtn.textContent = '↺ Replay';
-      } else if (state.step === 0) {
-        playBtn.textContent = '▶ Play';
-      } else {
-        playBtn.textContent = '▶ Resume';
-      }
-      stepBtn.disabled = state.playing || state.step >= AR_STEPS.length;
-      resetBtn.disabled = state.step === 0 && !state.playing;
+      backBtn.disabled = state.step === 0;
+      stepBtn.disabled = state.step >= AR_STEPS.length;
     }
 
     function render() {
@@ -2133,54 +2117,20 @@
       updateControls();
     }
 
-    function advance() {
+    function stepForward() {
       if (state.step >= AR_STEPS.length) return;
       state.step += 1;
       render();
     }
 
-    function play() {
-      if (state.step >= AR_STEPS.length) {
-        // Replay from start
-        state.step = 0;
-        render();
-      }
-      state.playing = true;
-      updateControls();
-      // Advance immediately for responsiveness, then tick.
-      advance();
-      state.timer = setInterval(() => {
-        if (!state.playing) return;
-        if (state.step >= AR_STEPS.length) {
-          pause();
-          return;
-        }
-        advance();
-      }, INTERVAL_MS);
-    }
-
-    function pause() {
-      state.playing = false;
-      if (state.timer) { clearInterval(state.timer); state.timer = null; }
-      updateControls();
-    }
-
-    function reset() {
-      pause();
-      state.step = 0;
+    function stepBack() {
+      if (state.step === 0) return;
+      state.step -= 1;
       render();
     }
 
-    playBtn.addEventListener('click', () => {
-      if (state.playing) pause();
-      else play();
-    });
-
-    stepBtn.addEventListener('click', () => {
-      if (!state.playing) advance();
-    });
-
-    resetBtn.addEventListener('click', reset);
+    stepBtn.addEventListener('click', stepForward);
+    backBtn.addEventListener('click', stepBack);
 
     render();
   })();
